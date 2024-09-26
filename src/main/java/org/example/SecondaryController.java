@@ -51,15 +51,16 @@ public class SecondaryController {
 
     @FXML
     private void handleOnKeyPressed(KeyEvent keyEvent) throws IOException {
+        rectangle.xProperty().unbind();
         KeyCode key = keyEvent.getCode();
         switch (key) {
             case UP:
             case W:
-                moveUp();
+                //moveUp();
                 break;
             case DOWN:
             case S:
-                moveDown();
+                //moveDown();
                 break;
             case LEFT:
             case A:
@@ -81,5 +82,7 @@ public class SecondaryController {
         border.heightProperty().bind(pane.heightProperty());
         menuButton.setFocusTraversable(false);
         rectangle.setFocusTraversable(true);
+        rectangle.yProperty().bind(border.heightProperty().add(-20));
+        rectangle.xProperty().bind(border.widthProperty().divide(2).subtract(rectangle.widthProperty().divide(2)));
     }
 }

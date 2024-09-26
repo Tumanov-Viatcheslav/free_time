@@ -11,5 +11,5 @@
     <Button fx:id="menuButton" AnchorPane.leftAnchor="200.0" onAction="#switchToMenu" text="Exit to menu" />
     <Rectangle fx:id="border" fill="#ffffff00" height="480.0" stroke="black" strokeType="INSIDE" width="640.0" visible="false"
                AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="30.0" y="30"/>
-    <Rectangle fx:id="rectangle" fill="burlywood" height="10" stroke="black" width="10" x="20" y="40" />
+    <Rectangle fx:id="rectangle" fill="burlywood" height="10" stroke="black" width="50"/>
 </AnchorPane>
