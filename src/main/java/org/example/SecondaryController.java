@@ -15,7 +15,7 @@ import org.example.arkanoid.Platform;
 
 public class SecondaryController {
     private final double DEFAULT_STEP_SIZE = 10.0;
-    private DoubleProperty scale = new SimpleDoubleProperty(1.0);
+    private DoubleProperty scale = new SimpleDoubleProperty();
     private double stepSize = DEFAULT_STEP_SIZE;
 
     @FXML
@@ -84,6 +84,7 @@ public class SecondaryController {
 
     @FXML
     public void initialize() {
+        //TODO move all view and proportion changes to here and do all game calculations in scale=1
         String labelText = "ARKANOID";
         border.widthProperty().bind(pane.widthProperty());
         border.heightProperty().bind(pane.heightProperty().subtract(border.getY()));
@@ -92,13 +93,14 @@ public class SecondaryController {
         platform.setBorder(border);
         platform.yProperty().bind(border.heightProperty().add(10));
         //platform.xProperty().bind(border.widthProperty().divide(2).subtract(platform.widthProperty().divide(2)));
-        platform.xProperty().bind(scale.multiply(platform.getX()).add(App.initialWidth / 2 - platform.getWidth() / 2));
+        platform.xProperty().bind(scale.multiply(platform.getX() + App.initialWidth / 2 - platform.getWidth() / 2));
         label1.setText(labelText);
         border.widthProperty().addListener((observable, oldValue, newValue) -> {
             if ((double)oldValue != 0.0) {
-                double platformX = platform.getX(), platformWidth = platform.getWidth();
                 scale.setValue((double) newValue / (double) oldValue);
                 stepSize = DEFAULT_STEP_SIZE * scale.get();
+                platform.widthProperty().bind(scale.multiply(platform.getWidth()));
+                double platformX = platform.getX(), platformWidth = platform.getWidth();
                 platform.xProperty().bind(scale.multiply(
                         (scale.get() * (platformX + platformWidth)) < (double) newValue ? platformX : (((double) newValue - platformWidth) / scale.get())
                 ));
