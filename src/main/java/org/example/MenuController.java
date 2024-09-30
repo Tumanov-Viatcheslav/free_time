@@ -10,14 +10,23 @@ import javafx.stage.Stage;
 import javax.swing.*;
 
 public class MenuController {
+    @FXML
+    private Button arkanoidButton;
 
     @FXML
     private void switchToSecondary() throws IOException {
-        App.setRoot("secondary");
+        App.setRoot("arkanoid");
     }
 
     @FXML
     private void exit(ActionEvent e) {
         ((Stage)(((Button)e.getSource()).getScene().getWindow())).close();
+    }
+
+    @FXML
+    public void initialize() {
+        final String arkanoidButtonText = "Arkanoid";
+        arkanoidButton.setText(arkanoidButtonText);
+        arkanoidButton.setFocusTraversable(false);
     }
 }
