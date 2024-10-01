@@ -11,12 +11,15 @@ import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.HBox;
+import org.example.arkanoid.source.Ball;
 import org.example.arkanoid.source.Platform;
+import org.example.arkanoid.view.BallView;
 import org.example.arkanoid.view.PlatformView;
 
 public class ArkanoidController {
     private final double DEFAULT_STEP_SIZE = 10.0,
-            WINDOW_PROPORTION = 3.0 / 4.0;
+            WINDOW_PROPORTION = 3.0 / 4.0,
+            DEFAULT_BALL_SPEED = 10.0;
 
 
     private DoubleProperty scale = new SimpleDoubleProperty();
@@ -31,13 +34,17 @@ public class ArkanoidController {
     @FXML
     private AnchorPane pane;
     @FXML
+    private BorderGameView borderView;
+    @FXML
     private PlatformView platformView;
+    @FXML
+    private BallView ballView;
     @FXML
     private BorderGame border;
     @FXML
     private Platform platform;
     @FXML
-    private BorderGameView borderView;
+    private Ball ball;
 
     @FXML
     private void switchToMenu() throws IOException {
@@ -91,16 +98,20 @@ public class ArkanoidController {
     @FXML
     public void initialize() {
         String labelText = "ARKANOID";
+        labelArkanoid.setText(labelText);
+        menuButton.setFocusTraversable(false);
         borderView.widthProperty().bind(pane.widthProperty());
         borderView.heightProperty().bind(borderView.widthProperty().multiply(WINDOW_PROPORTION).subtract(borderView.getY()));
-        scale.bind(borderView.widthProperty().divide(App.initialWidth));
-        menuButton.setFocusTraversable(false);
-        platformView.setFocusTraversable(true);
         platform.setBorder(border);
         platform.setY(border.getHeight() - 20.0);
-        platform.setX((border.getWidth() - platform.getX()) / 2);
+        platform.setX((border.getWidth() - platform.getWidth()) / 2);
+        //ball.setCenterX(border.getWidth() / 2);
+        ball.centerXProperty().bind(platform.xProperty().add(platform.widthProperty().divide(2.0)));
+        ball.setCenterY(platform.getY() - platform.getHeight() - ball.getRadius());
+        scale.bind(borderView.widthProperty().divide(App.initialWidth));
+        platformView.setFocusTraversable(true);
         bindPlatformView();
-        labelArkanoid.setText(labelText);
+        bindBallView();
         //TODO tinker conditions to make resize right
         pane.widthProperty().addListener((observable, oldValue, newValue) -> {
             if (((double) newValue < borderView.getWidth()) ||
@@ -127,5 +138,11 @@ public class ArkanoidController {
         platformView.yProperty().bind(scale.multiply(platform.yProperty()));
         platformView.widthProperty().bind(scale.multiply(platform.widthProperty()));
         platformView.heightProperty().bind(scale.multiply(platform.heightProperty()));
+    }
+
+    private void bindBallView() {
+        ballView.centerXProperty().bind(scale.multiply(ball.centerXProperty()));
+        ballView.centerYProperty().bind(scale.multiply(ball.centerYProperty()));
+        ballView.radiusProperty().bind(scale.multiply(ball.radiusProperty()));
     }
 }
