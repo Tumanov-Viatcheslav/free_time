@@ -1,4 +1,4 @@
-package org.example.arkanoid;
+package org.example.arkanoid.source;
 
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.ObjectPropertyBase;

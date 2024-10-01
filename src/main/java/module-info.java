@@ -6,5 +6,6 @@ module org.example {
 
     opens org.example to javafx.fxml;
     exports org.example;
-    exports org.example.arkanoid;
+    exports org.example.arkanoid.view;
+    exports org.example.arkanoid.source;
 }
