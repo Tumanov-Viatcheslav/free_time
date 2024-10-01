@@ -8,7 +8,7 @@ import org.example.BorderGame;
 
 public class Platform extends Rectangle {
     @FXML
-    private final ObjectProperty<BorderGame> border = new ObjectPropertyBase<BorderGame>() {
+    private final ObjectProperty<BorderGame> border = new ObjectPropertyBase<>() {
         @Override
         public Object getBean() {
             return new BorderGame();

@@ -23,13 +23,11 @@ public class ArkanoidController {
             PLATFORM_ELEVATION = 20.0;
 
 
-    private DoubleProperty scale = new SimpleDoubleProperty();
+    private final DoubleProperty scale = new SimpleDoubleProperty();
     private double stepSize = DEFAULT_STEP_SIZE;
 
     @FXML
     private Label labelArkanoid;
-    @FXML
-    private HBox hBox;
     @FXML
     private Button menuButton;
     @FXML
@@ -143,6 +141,7 @@ public class ArkanoidController {
     private void initBall() {
         ball.centerXProperty().bind(platform.xProperty().add(platform.widthProperty().divide(2.0)));
         ball.setCenterY(platform.getY() - platform.getHeight() - ball.getRadius());
+        ball.setSpeed(DEFAULT_BALL_SPEED);
     }
 
     private void bindPlatformView() {
