@@ -15,11 +15,11 @@ public class Ball extends Circle {
     }
 
     public void turnLeft() {
-        direction = BallDirection.valueOf(String.valueOf((direction.ordinal() + 1) % BallDirection.values().length));
+        direction = BallDirection.values()[(direction.ordinal() + 1) % BallDirection.values().length];
     }
 
     public void turnRight() {
-        direction = BallDirection.valueOf(String.valueOf((direction.ordinal() - 1) % BallDirection.values().length));
+        direction = BallDirection.values()[(direction.ordinal() - 1) % BallDirection.values().length];
     }
 
     public double getSpeed() {
