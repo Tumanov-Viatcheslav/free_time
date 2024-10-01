@@ -86,7 +86,6 @@ public class ArkanoidController {
                 switchToMenu();
                 break;
         }
-        System.out.println(platformView);
     }
 
     @FXML
@@ -104,17 +103,21 @@ public class ArkanoidController {
         labelArkanoid.setText(labelText);
         //TODO tinker conditions to make resize right
         pane.widthProperty().addListener((observable, oldValue, newValue) -> {
-            System.out.println(borderView.getHeight() + " " + pane.getHeight());
-            if (((double) newValue < borderView.getWidth()) || (borderView.getHeight() < pane.getHeight() + borderView.getY())) {
+            if (((double) newValue < borderView.getWidth()) ||
+                    (borderView.getHeight() < pane.getHeight() - borderView.getY())) {
                 borderView.widthProperty().bind(pane.widthProperty());
             }
             borderView.widthProperty().unbind();
         });
         pane.heightProperty().addListener((observable, oldValue, newValue) -> {
-            if ((double) newValue - borderView.getY() < borderView.getHeight() || (borderView.getHeight() < (double) newValue - borderView.getY())) {
+            borderView.widthProperty().bind(pane.widthProperty());
+            if (((double) newValue < borderView.getWidth()) ||
+                    (double) newValue - borderView.getY() < borderView.getHeight() ||
+                    (borderView.getHeight() < (double) newValue - borderView.getY())) {
                 borderView.widthProperty().unbind();
                 borderView.setWidth((pane.getHeight()) / WINDOW_PROPORTION);
-                //borderView.widthProperty().bind(pane.widthProperty());
+                if (pane.getWidth() < borderView.getWidth())
+                    borderView.widthProperty().bind(pane.widthProperty());
             }
         });
     }
