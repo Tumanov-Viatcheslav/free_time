@@ -106,7 +106,10 @@ public class ArkanoidController {
         platformView.setFocusTraversable(true);
         bindPlatformView();
         bindBallView();
-        //Handler of resize
+        addResizeListeners();
+    }
+
+    private void addResizeListeners() {
         pane.widthProperty().addListener((observable, oldValue, newValue) -> {
             if (((double) newValue < borderView.getWidth()) ||
                     (borderView.getHeight() < pane.getHeight() - borderView.getY())) {
