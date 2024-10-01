@@ -19,7 +19,8 @@ import org.example.arkanoid.view.PlatformView;
 public class ArkanoidController {
     private final double DEFAULT_STEP_SIZE = 10.0,
             WINDOW_PROPORTION = 3.0 / 4.0,
-            DEFAULT_BALL_SPEED = 10.0;
+            DEFAULT_BALL_SPEED = 10.0,
+            PLATFORM_ELEVATION = 20.0;
 
 
     private DoubleProperty scale = new SimpleDoubleProperty();
@@ -100,19 +101,14 @@ public class ArkanoidController {
         String labelText = "ARKANOID";
         labelArkanoid.setText(labelText);
         menuButton.setFocusTraversable(false);
-        borderView.widthProperty().bind(pane.widthProperty());
-        borderView.heightProperty().bind(borderView.widthProperty().multiply(WINDOW_PROPORTION).subtract(borderView.getY()));
-        platform.setBorder(border);
-        platform.setY(border.getHeight() - 20.0);
-        platform.setX((border.getWidth() - platform.getWidth()) / 2);
-        //ball.setCenterX(border.getWidth() / 2);
-        ball.centerXProperty().bind(platform.xProperty().add(platform.widthProperty().divide(2.0)));
-        ball.setCenterY(platform.getY() - platform.getHeight() - ball.getRadius());
+        bindBorderView();
+        initPlatform();
+        initBall();
         scale.bind(borderView.widthProperty().divide(App.initialWidth));
         platformView.setFocusTraversable(true);
         bindPlatformView();
         bindBallView();
-        //TODO tinker conditions to make resize right
+        //Handler of resize
         pane.widthProperty().addListener((observable, oldValue, newValue) -> {
             if (((double) newValue < borderView.getWidth()) ||
                     (borderView.getHeight() < pane.getHeight() - borderView.getY())) {
@@ -131,6 +127,22 @@ public class ArkanoidController {
                     borderView.widthProperty().bind(pane.widthProperty());
             }
         });
+    }
+
+
+    private void bindBorderView() {
+        borderView.widthProperty().bind(pane.widthProperty());
+        borderView.heightProperty().bind(borderView.widthProperty().multiply(WINDOW_PROPORTION).subtract(borderView.getY()));
+    }
+
+    private void initPlatform() {
+        platform.setBorder(border);
+        platform.setY(border.getHeight() - PLATFORM_ELEVATION);
+        platform.setX((border.getWidth() - platform.getWidth()) / 2);
+    }
+    private void initBall() {
+        ball.centerXProperty().bind(platform.xProperty().add(platform.widthProperty().divide(2.0)));
+        ball.setCenterY(platform.getY() - platform.getHeight() - ball.getRadius());
     }
 
     private void bindPlatformView() {
