@@ -10,7 +10,6 @@ import javafx.scene.control.Label;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.AnchorPane;
-import javafx.scene.layout.HBox;
 import org.example.arkanoid.source.Ball;
 import org.example.arkanoid.source.Platform;
 import org.example.arkanoid.view.BallView;
@@ -21,6 +20,7 @@ public class ArkanoidController {
             WINDOW_PROPORTION = 3.0 / 4.0,
             DEFAULT_BALL_SPEED = 10.0,
             PLATFORM_ELEVATION = 20.0;
+    private final int DEFAULT_FPS = 30;
 
 
     private final DoubleProperty scale = new SimpleDoubleProperty();
@@ -48,6 +48,7 @@ public class ArkanoidController {
     @FXML
     private void switchToMenu() throws IOException {
         App.setRoot("menu");
+        ball.stopAnimation();
     }
 
     private void moveUp() {
@@ -66,6 +67,12 @@ public class ArkanoidController {
 
     private void moveRight() {
         platform.moveRight(stepSize);
+    }
+
+    private void startGame() {
+        ball.centerXProperty().unbind();
+        ball.setAnimation(DEFAULT_FPS);
+        ball.startAnimation();
     }
 
     @FXML
@@ -87,6 +94,9 @@ public class ArkanoidController {
             case RIGHT:
             case D:
                 moveRight();
+                break;
+            case SPACE:
+                startGame();
                 break;
             case ESCAPE:
                 switchToMenu();
@@ -144,7 +154,7 @@ public class ArkanoidController {
     private void initBall() {
         ball.centerXProperty().bind(platform.xProperty().add(platform.widthProperty().divide(2.0)));
         ball.setCenterY(platform.getY() - platform.getHeight() - ball.getRadius());
-        ball.setSpeed(DEFAULT_BALL_SPEED);
+        ball.setSpeed(DEFAULT_BALL_SPEED / DEFAULT_FPS);
     }
 
     private void bindPlatformView() {

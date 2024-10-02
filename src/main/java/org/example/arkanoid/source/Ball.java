@@ -1,10 +1,12 @@
 package org.example.arkanoid.source;
 
+import javafx.animation.AnimationTimer;
 import javafx.scene.shape.Circle;
 
 public class Ball extends Circle {
-    BallDirection direction;
-    double speed;
+    private AnimationTimer animationBall;
+    private BallDirection direction = BallDirection.UP_RIGHT;
+    private double speed;
 
     public BallDirection getDirection() {
         return direction;
@@ -28,6 +30,18 @@ public class Ball extends Circle {
 
     public void setSpeed(double speed) {
         this.speed = speed;
+    }
+
+    public void startAnimation() {
+        animationBall.start();
+    }
+
+    public void stopAnimation() {
+        animationBall.stop();
+    }
+
+    public void setAnimation(int fps) {
+        this.animationBall = new BallAnimation(this, fps);
     }
 
     public void move() {
