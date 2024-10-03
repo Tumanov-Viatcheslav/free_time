@@ -71,6 +71,7 @@ public class Ball extends Circle {
      *          2 if upper border collision
      */
     private int checkBorderCollision() {
+        //TODO make movement in case of collision. Return bool
         double newX = 0, newY = 0;
         switch (direction) {
             case UP_RIGHT:
@@ -122,6 +123,7 @@ public class Ball extends Circle {
      *          1 if ball need to turn right
      */
     private int collisionHandler() {
+        //TODO make movement in case of collision. Return bool
         //TODO If bottom border
         if (true) {
             stopAnimation();
