@@ -2,7 +2,9 @@ package org.example;
 
 import java.io.IOException;
 
+import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.DoubleProperty;
+import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleDoubleProperty;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
@@ -24,6 +26,7 @@ public class ArkanoidController {
 
 
     private final DoubleProperty scale = new SimpleDoubleProperty();
+    private final BooleanProperty lost = new SimpleBooleanProperty(false);
     private double stepSize = DEFAULT_STEP_SIZE;
 
     @FXML
@@ -73,6 +76,10 @@ public class ArkanoidController {
         ball.startAnimation();
     }
 
+    private void lostGame() {
+        labelArkanoid.setText("Lost");
+    }
+
     @FXML
     private void handleOnKeyPressed(KeyEvent keyEvent) throws IOException {
         KeyCode key = keyEvent.getCode();
@@ -116,6 +123,7 @@ public class ArkanoidController {
         bindPlatformView();
         bindBallView();
         addResizeListeners();
+        lost.addListener(((observable, oldValue, newValue) -> {if ((boolean) newValue) lostGame();}));
     }
 
     private void addResizeListeners() {
