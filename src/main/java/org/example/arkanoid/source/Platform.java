@@ -1,47 +1,25 @@
 package org.example.arkanoid.source;
 
-import javafx.beans.property.ObjectProperty;
-import javafx.beans.property.ObjectPropertyBase;
-import javafx.fxml.FXML;
 import javafx.scene.shape.Rectangle;
 import org.example.BorderGame;
 
 public class Platform extends Rectangle {
-    @FXML
-    private final ObjectProperty<BorderGame> border = new ObjectPropertyBase<>() {
-        @Override
-        public Object getBean() {
-            return new BorderGame();
-        }
-
-        @Override
-        public String getName() {
-            return "border";
-        }
-    };
+    private BorderGame border;
 
     public Platform() {
-        super();
+        super(50, 10);
     }
 
     public void setBorder(BorderGame border) {
-        this.border.set(border);
-    }
-
-    public BorderGame getBorder() {
-        return border.get();
+        this.border = border;
     }
 
     public double getBorderX() {
-        return getBorder().getX();
+        return border.getX();
     }
 
     public double getBorderWidth() {
-        return getBorder().getWidth();
-    }
-
-    public ObjectProperty<BorderGame> borderProperty() {
-        return border;
+        return border.getWidth();
     }
 
     public void moveLeft(double step) {

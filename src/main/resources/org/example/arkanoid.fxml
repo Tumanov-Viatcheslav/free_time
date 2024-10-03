@@ -3,19 +3,13 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 
-<?import org.example.BorderGame?>
 <?import org.example.arkanoid.view.PlatformView?>
-<?import org.example.arkanoid.source.Platform?>
 <?import org.example.BorderGameView?>
-<?import org.example.arkanoid.source.Ball?>
 <?import org.example.arkanoid.view.BallView?>
 <AnchorPane fx:id="pane" onKeyPressed="#handleOnKeyPressed"
             xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.example.ArkanoidController">
     <Button fx:id="menuButton" AnchorPane.rightAnchor="0.0" onAction="#switchToMenu" text="Exit to menu"/>
     <Label fx:id="labelArkanoid"/>
-    <BorderGame fx:id="border" height="480.0" width="640.0" visible="false"/>
-    <Platform fx:id="platform" height="10" width="50" visible="false"/>
-    <Ball fx:id="ball" radius="10" visible="false"/>
     <BorderGameView fx:id="borderView" fill="black"
                     AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="30.0" y="30"/>
     <PlatformView fx:id="platformView" fill="burlywood" stroke="black"/>

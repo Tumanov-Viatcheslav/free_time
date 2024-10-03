@@ -40,9 +40,7 @@ public class ArkanoidController {
     private BallView ballView;
     @FXML
     private BorderGame border;
-    @FXML
     private Platform platform;
-    @FXML
     private Ball ball;
 
     @FXML
@@ -110,6 +108,7 @@ public class ArkanoidController {
         labelArkanoid.setText(labelText);
         menuButton.setFocusTraversable(false);
         bindBorderView();
+        border = new BorderGame();
         initPlatform();
         initBall();
         scale.bind(borderView.widthProperty().divide(App.initialWidth));
@@ -147,12 +146,16 @@ public class ArkanoidController {
     }
 
     private void initPlatform() {
+        platform = new Platform();
         platform.setBorder(border);
         platform.setY(border.getHeight() - PLATFORM_ELEVATION);
         platform.setX((border.getWidth() - platform.getWidth()) / 2);
     }
     private void initBall() {
+        ball = new Ball();
         ball.centerXProperty().bind(platform.xProperty().add(platform.widthProperty().divide(2.0)));
+        ball.setPlatform(platform);
+        ball.setBorder(border);
         ball.setCenterY(platform.getY() - platform.getHeight() - ball.getRadius());
         ball.setSpeed(DEFAULT_BALL_SPEED / DEFAULT_FPS);
     }
