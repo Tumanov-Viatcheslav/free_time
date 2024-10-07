@@ -64,8 +64,35 @@ public class Ball extends Circle {
     }
 
     /**
-     * returns  true if collided
-     *          false if not collided
+     * returns  true if collided with platform
+     *          false if not collided with platform
+     */
+    private boolean checkPlatformCollision() {
+        double newX = 0, newY = 0, oldX = getCenterX(), oldY = getCenterY();
+        // TODO extract method to get newX and newY
+        switch (direction) {
+            case UP_RIGHT:
+                newX = oldX + speed;
+                newY = oldY - speed;
+                break;
+            case UP_LEFT:
+                newX = oldX - speed;
+                newY = oldY - speed;
+                break;
+            case DOWN_LEFT:
+                newX = oldX - speed;
+                newY = oldY + speed;
+                break;
+            case DOWN_RIGHT:
+                newX = oldX + speed;
+                newY = oldY + speed;
+        }
+        return false;
+    }
+
+    /**
+     * returns  true if collided with border
+     *          false if not collided with border
      */
     private boolean checkBorderCollision() {
         double newX = 0, newY = 0;
