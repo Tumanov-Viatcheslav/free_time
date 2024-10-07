@@ -64,14 +64,10 @@ public class Ball extends Circle {
     }
 
     /**
-     * returns  -2 if bottom border collision
-     *          -1 if left border collision
-     *          0 if there is no collision
-     *          1 if right border collision
-     *          2 if upper border collision
+     * returns  true if collided
+     *          false if not collided
      */
-    private int checkBorderCollision() {
-        //TODO make movement in case of collision. Return bool
+    private boolean checkBorderCollision() {
         double newX = 0, newY = 0;
         switch (direction) {
             case UP_RIGHT:
@@ -96,61 +92,164 @@ public class Ball extends Circle {
                 collidedBottomBorder = false,
                 collidedRightBorder = false;
 
-        if (newY < border.getY())
+        if (newY < border.getY() + getRadius())
             collidedUpperBorder = true;
-        if (newX < border.getX())
+        if (newX < border.getX() + getRadius())
             collidedLeftBorder = true;
-        if (newY > border.getY() + border.getHeight())
+        if (newY > border.getHeight() - getRadius())
             collidedBottomBorder = true;
-        if (newX > border.getX() + border.getWidth())
+        if (newX > border.getWidth() - getRadius())
             collidedRightBorder = true;
 
-        if (collidedUpperBorder && collidedLeftBorder)
-            return newY - border.getY() < newX - border.getX() ? 2 : -1;
-        if (collidedUpperBorder && collidedRightBorder)
-            return newY - border.getY() < newX - border.getX() - border.getWidth() ? 2 : 1;
-        if (collidedBottomBorder && collidedLeftBorder)
-            return newY - border.getY() < newX - border.getX() ? -2 : -1;
-        if (collidedBottomBorder && collidedRightBorder)
-            return newY - border.getY() < newX - border.getX() ? -2 : 1;
+        int returnValue;
 
-        return 0;
+        // TODO check border.getY and border.getHeight here is bug
+        // Check collisions in corner
+        // -2 Upper border collision first
+        // -1 Left border collision first
+        // 1 Right border collision first
+        // 2 Bottom border collision first
+        if (collidedUpperBorder && collidedLeftBorder) {
+            returnValue = newY - border.getY() < newX - border.getX() ? 2 : -1;
+            if (returnValue == 2) {
+                moveTo(getCenterX() - (getCenterY() - border.getY()), border.getY());
+                turnLeft();
+            }
+            if (returnValue == -1) {
+                moveTo(border.getX(), getCenterY() - (getCenterX() - border.getX()));
+                turnRight();
+            }
+            return true;
+        }
+        if (collidedUpperBorder && collidedRightBorder) {
+            returnValue = newY - border.getY() < newX - border.getX() - border.getWidth() ? 2 : 1;
+            if (returnValue == 2) {
+                moveTo(getCenterX() + (getCenterY() - border.getY()), border.getY());
+                turnRight();
+            }
+            if (returnValue == 1) {
+                moveTo(border.getWidth(), getCenterY() - (border.getWidth() - getCenterX()));
+                turnLeft();
+            }
+            return true;
+        }
+        if (collidedBottomBorder && collidedLeftBorder) {
+            returnValue = newY - border.getY() < newX - border.getX() ? -2 : -1;
+            if (returnValue == -2) {
+                moveTo(getCenterX() - (border.getHeight() - getCenterY()), border.getHeight());
+                turnRight();
+                stopAnimation();
+                hasLost();
+            }
+            if (returnValue == -1) {
+                moveTo(border.getX(), getCenterY() + (getCenterX() - border.getX()));
+                turnLeft();
+            }
+            return true;
+        }
+        if (collidedBottomBorder && collidedRightBorder){
+            returnValue = newY - border.getY() < newX - border.getX() ? -2 : 1;
+            if (returnValue == -2) {
+                moveTo(getCenterX() + (border.getHeight() - getCenterY()), border.getHeight());
+                turnLeft();
+            }
+            if (returnValue == 1) {
+                moveTo(border.getWidth(), getCenterY() + (border.getWidth() - getCenterX()));
+                turnRight();
+                stopAnimation();
+                hasLost();
+            }
+            return true;
+        }
+
+        // Check single border collision
+        if (collidedUpperBorder) {
+            if (direction == BallDirection.UP_LEFT) {
+                moveTo(getCenterX() - (getCenterY() - (border.getY() + getRadius())), border.getY() + getRadius());
+                turnLeft();
+            }
+            if (direction == BallDirection.UP_RIGHT) {
+                moveTo(getCenterX() + (getCenterY() - (border.getY() + getRadius())), border.getY() + getRadius());
+                turnRight();
+            }
+            // TODO add exceptions on different directions
+            return true;
+        }
+        if (collidedLeftBorder) {
+            if (direction == BallDirection.UP_LEFT) {
+                moveTo(border.getX() + getRadius(), getCenterY() - (getCenterX() - (border.getX() + getRadius())));
+                turnRight();
+            }
+            if (direction == BallDirection.DOWN_LEFT) {
+                moveTo(border.getX() + getRadius(), getCenterY() + (getCenterX() - (border.getX() + getRadius())));
+                turnLeft();
+            }
+            // TODO add exceptions on different directions
+            return true;
+        }
+        if (collidedBottomBorder) {
+            if (direction == BallDirection.DOWN_RIGHT) {
+                moveTo(getCenterX() + ((border.getHeight() - getRadius()) - getCenterY()), border.getHeight() - getRadius());
+                turnLeft();
+            }
+            if (direction == BallDirection.DOWN_LEFT) {
+                moveTo(getCenterX() - ((border.getHeight() - getRadius()) - getCenterY()), border.getHeight() - getRadius());
+                turnRight();
+            }
+            // TODO add exceptions on different directions
+            stopAnimation();
+            hasLost();
+            return true;
+        }
+        if (collidedRightBorder) {
+            if (direction == BallDirection.UP_RIGHT) {
+                moveTo(border.getWidth() - getRadius(), getCenterY() - ((border.getWidth() - getRadius()) - getCenterX()));
+                turnLeft();
+            }
+            if (direction == BallDirection.DOWN_RIGHT) {
+                moveTo(border.getWidth() - getRadius(), getCenterY() + ((border.getWidth() - getRadius()) - getCenterX()));
+                turnRight();
+            }
+            // TODO add exceptions on different directions
+            return true;
+        }
+
+        return false;
     }
 
     /**
-     * returns -1 if ball need to turn left
-     *          0 if there is no collision
-     *          1 if ball need to turn right
+     * returns true if there is collision
+     *         false if there is no collision
      */
-    private int collisionHandler() {
+    private boolean collided() {
         //TODO make movement in case of collision. Return bool
         //TODO If bottom border
-        if (true) {
-            stopAnimation();
-            hasLost();
-            return -2;
-        }
-        return 0;
+        boolean collidedBorder = checkBorderCollision(),
+                collidedPlatform = false,
+                collidedBrick = false;
+        return collidedBorder | collidedPlatform | collidedBrick;
+    }
+
+    private void moveTo(double x, double y) {
+        setCenterX(x);
+        setCenterY(y);
     }
 
     public void move() {
-        //TODO collision handler
+        if (collided())
+            return;
         switch (direction) {
             case UP_RIGHT:
-                setCenterX(getCenterX() + speed);
-                setCenterY(getCenterY() - speed);
+                moveTo(getCenterX() + speed, getCenterY() - speed);
                 break;
             case UP_LEFT:
-                setCenterX(getCenterX() - speed);
-                setCenterY(getCenterY() - speed);
+                moveTo(getCenterX() - speed, getCenterY() - speed);
                 break;
             case DOWN_LEFT:
-                setCenterX(getCenterX() - speed);
-                setCenterY(getCenterY() + speed);
+                moveTo(getCenterX() - speed, getCenterY() + speed);
                 break;
             case DOWN_RIGHT:
-                setCenterX(getCenterX() + speed);
-                setCenterY(getCenterY() + speed);
+                moveTo(getCenterX() + speed, getCenterY() + speed);
         }
     }
 }

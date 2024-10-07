@@ -20,7 +20,7 @@ import org.example.arkanoid.view.PlatformView;
 public class ArkanoidController {
     private final double DEFAULT_STEP_SIZE = 10.0,
             WINDOW_PROPORTION = 3.0 / 4.0,
-            DEFAULT_BALL_SPEED = 10.0,
+            DEFAULT_BALL_SPEED = 100.0,
             PLATFORM_ELEVATION = 20.0;
     private final int DEFAULT_FPS = 30;
 
@@ -116,6 +116,7 @@ public class ArkanoidController {
         menuButton.setFocusTraversable(false);
         bindBorderView();
         border = new BorderGame();
+        border.setY(borderView.getY());
         initPlatform();
         initBall();
         scale.bind(borderView.widthProperty().divide(App.initialWidth));
