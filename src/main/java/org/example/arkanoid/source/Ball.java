@@ -13,7 +13,7 @@ public class Ball extends Circle {
     private BorderGame border;
     private Platform platform;
 
-    private final BooleanProperty lost = new SimpleBooleanProperty(false);
+    private final BooleanProperty lost = new SimpleBooleanProperty();
 
     public Ball() {
         super(10);
@@ -32,7 +32,7 @@ public class Ball extends Circle {
     }
 
     public void turnRight() {
-        direction = BallDirection.values()[(direction.ordinal() - 1) % BallDirection.values().length];
+        direction = BallDirection.values()[(BallDirection.values().length + direction.ordinal() - 1) % BallDirection.values().length];
     }
 
     public void setSpeed(double speed) {
@@ -59,8 +59,44 @@ public class Ball extends Circle {
         this.animationBall = new BallAnimation(this, fps);
     }
 
+    public void hasStarted() {
+        lost.setValue(false);
+    }
+
     public void hasLost() {
         lost.setValue(true);
+    }
+
+    public BooleanProperty lostProperty() {
+        return lost;
+    }
+
+    private double getNewX(double oldX) {
+        double newX = 0;
+        switch (direction) {
+            case UP_LEFT:
+            case DOWN_LEFT:
+                newX = oldX - speed;
+                break;
+            case UP_RIGHT:
+            case DOWN_RIGHT:
+                newX = oldX + speed;
+        }
+        return newX;
+    }
+
+    private double getNewY(double oldY) {
+        double newY = 0;
+        switch (direction) {
+            case UP_RIGHT:
+            case UP_LEFT:
+                newY = oldY - speed;
+                break;
+            case DOWN_LEFT:
+            case DOWN_RIGHT:
+                newY = oldY + speed;
+        }
+        return newY;
     }
 
     /**
@@ -68,25 +104,7 @@ public class Ball extends Circle {
      *          false if not collided with platform
      */
     private boolean checkPlatformCollision() {
-        double newX = 0, newY = 0, oldX = getCenterX(), oldY = getCenterY();
-        // TODO extract method to get newX and newY
-        switch (direction) {
-            case UP_RIGHT:
-                newX = oldX + speed;
-                newY = oldY - speed;
-                break;
-            case UP_LEFT:
-                newX = oldX - speed;
-                newY = oldY - speed;
-                break;
-            case DOWN_LEFT:
-                newX = oldX - speed;
-                newY = oldY + speed;
-                break;
-            case DOWN_RIGHT:
-                newX = oldX + speed;
-                newY = oldY + speed;
-        }
+        double oldX = getCenterX(), oldY = getCenterY(), newX = getNewX(oldX), newY = getNewY(oldY);
         return false;
     }
 
@@ -94,25 +112,8 @@ public class Ball extends Circle {
      * returns  true if collided with border
      *          false if not collided with border
      */
-    private boolean checkBorderCollision() {
-        double newX = 0, newY = 0;
-        switch (direction) {
-            case UP_RIGHT:
-                newX = getCenterX() + speed;
-                newY = getCenterY() - speed;
-                break;
-            case UP_LEFT:
-                newX = getCenterX() - speed;
-                newY = getCenterY() - speed;
-                break;
-            case DOWN_LEFT:
-                newX = getCenterX() - speed;
-                newY = getCenterY() + speed;
-                break;
-            case DOWN_RIGHT:
-                newX = getCenterX() + speed;
-                newY = getCenterY() + speed;
-        }
+    private void handleBorderCollision() {
+        double oldX = getCenterX(), oldY = getCenterY(), newX = getNewX(oldX), newY = getNewY(oldY);
 
         boolean collidedUpperBorder = false,
                 collidedLeftBorder = false,
@@ -128,65 +129,62 @@ public class Ball extends Circle {
         if (newX > border.getWidth() - getRadius())
             collidedRightBorder = true;
 
-        int returnValue;
 
-        // TODO check border.getY and border.getHeight here is bug
+        // TODO handle when ball is right in the corner
         // Check collisions in corner
         // -2 Upper border collision first
         // -1 Left border collision first
         // 1 Right border collision first
         // 2 Bottom border collision first
+        int borderIndicator;
+
         if (collidedUpperBorder && collidedLeftBorder) {
-            returnValue = newY - border.getY() < newX - border.getX() ? 2 : -1;
-            if (returnValue == 2) {
+            borderIndicator = newY - border.getY() < newX - border.getX() ? 2 : -1;
+            if (borderIndicator == 2) {
                 moveTo(getCenterX() - (getCenterY() - border.getY()), border.getY());
                 turnLeft();
             }
-            if (returnValue == -1) {
+            if (borderIndicator == -1) {
                 moveTo(border.getX(), getCenterY() - (getCenterX() - border.getX()));
                 turnRight();
             }
-            return true;
         }
         if (collidedUpperBorder && collidedRightBorder) {
-            returnValue = newY - border.getY() < newX - border.getX() - border.getWidth() ? 2 : 1;
-            if (returnValue == 2) {
+            borderIndicator = newY - border.getY() < newX - border.getX() - border.getWidth() ? 2 : 1;
+            if (borderIndicator == 2) {
                 moveTo(getCenterX() + (getCenterY() - border.getY()), border.getY());
                 turnRight();
             }
-            if (returnValue == 1) {
+            if (borderIndicator == 1) {
                 moveTo(border.getWidth(), getCenterY() - (border.getWidth() - getCenterX()));
                 turnLeft();
             }
-            return true;
         }
         if (collidedBottomBorder && collidedLeftBorder) {
-            returnValue = newY - border.getY() < newX - border.getX() ? -2 : -1;
-            if (returnValue == -2) {
+            borderIndicator = newY - border.getY() < newX - border.getX() ? -2 : -1;
+            if (borderIndicator == -2) {
                 moveTo(getCenterX() - (border.getHeight() - getCenterY()), border.getHeight());
                 turnRight();
                 stopAnimation();
                 hasLost();
             }
-            if (returnValue == -1) {
+            if (borderIndicator == -1) {
                 moveTo(border.getX(), getCenterY() + (getCenterX() - border.getX()));
                 turnLeft();
             }
-            return true;
         }
         if (collidedBottomBorder && collidedRightBorder){
-            returnValue = newY - border.getY() < newX - border.getX() ? -2 : 1;
-            if (returnValue == -2) {
+            borderIndicator = newY - border.getY() < newX - border.getX() ? -2 : 1;
+            if (borderIndicator == -2) {
                 moveTo(getCenterX() + (border.getHeight() - getCenterY()), border.getHeight());
                 turnLeft();
             }
-            if (returnValue == 1) {
+            if (borderIndicator == 1) {
                 moveTo(border.getWidth(), getCenterY() + (border.getWidth() - getCenterX()));
                 turnRight();
                 stopAnimation();
                 hasLost();
             }
-            return true;
         }
 
         // Check single border collision
@@ -200,7 +198,6 @@ public class Ball extends Circle {
                 turnRight();
             }
             // TODO add exceptions on different directions
-            return true;
         }
         if (collidedLeftBorder) {
             if (direction == BallDirection.UP_LEFT) {
@@ -212,7 +209,6 @@ public class Ball extends Circle {
                 turnLeft();
             }
             // TODO add exceptions on different directions
-            return true;
         }
         if (collidedBottomBorder) {
             if (direction == BallDirection.DOWN_RIGHT) {
@@ -226,7 +222,6 @@ public class Ball extends Circle {
             // TODO add exceptions on different directions
             stopAnimation();
             hasLost();
-            return true;
         }
         if (collidedRightBorder) {
             if (direction == BallDirection.UP_RIGHT) {
@@ -238,22 +233,110 @@ public class Ball extends Circle {
                 turnRight();
             }
             // TODO add exceptions on different directions
-            return true;
         }
-
-        return false;
     }
 
     /**
-     * returns true if there is collision
+     * returns  true if collided with border
+     *          false if not collided with border
+     */
+    private void handlePlatformCollision() {
+        // TODO handle collision
+    }
+
+    /**
+     * returns  true if collided with border
+     *          false if not collided with border
+     */
+    private void handleBricksCollision(int brickIndex) {
+        // TODO handle collision
+    }
+
+    /**
+     * @return -1 if there is no collision
+     *          d - distance to border if the is collision on movement execution
+     */
+    private double getBorderCollisionDistance() {
+        double oldX = getCenterX(), oldY = getCenterY(), newX = getNewX(oldX), newY = getNewY(oldY), max = -1;
+
+        if (newY < border.getY() + getRadius())
+            max = Math.max(max, oldY - border.getY() - getRadius());
+        if (newX < border.getX() + getRadius())
+            max = Math.max(max, oldX - border.getX() - getRadius());
+        if (newY > border.getHeight() - getRadius())
+            max = Math.max(max, border.getHeight() - getRadius() - oldY);
+        if (newX > border.getWidth() - getRadius())
+            max = Math.max(max, border.getWidth() - getRadius() - oldX);
+
+        return max;
+    }
+
+    /**
+     * @return -1 if there is no collision
+     *          d - distance to platform if the is collision on movement execution
+     */
+    private double getPlatformCollisionDistance() {
+        // TODO calculate distance
+        double oldX = getCenterX(), oldY = getCenterY(), newX = getNewX(oldX), newY = getNewY(oldY), max = -1;
+
+//        if (newY < border.getY() + getRadius())
+//            max = Math.max(max, oldY - border.getY() - getRadius());
+//        if (newX < border.getX() + getRadius())
+//            max = Math.max(max, oldX - border.getX() - getRadius());
+//        if (newY > border.getHeight() - getRadius())
+//            max = Math.max(max, border.getHeight() - getRadius() - oldY);
+//        if (newX > border.getWidth() - getRadius())
+//            max = Math.max(max, border.getWidth() - getRadius() - oldX);
+        return max;
+    }
+
+    /**
+     * @return -1 if there is no collision
+     *          nearestBrickIndex if there is collision
+     */
+    private int getNearestBrickIndex() {
+        // TODO bricks
+        return -1;
+    }
+
+    /**
+     * @return -1 if there is no collision
+     *          d - distance to brick if the is collision on movement execution
+     */
+    private double getBrickCollisionDistance(int brickIndex) {
+        return -1;
+    }
+
+    /**
+     * @return true if there is collision
      *         false if there is no collision
      */
     private boolean collided() {
-        //TODO make movement in case of collision. Return bool
-        //TODO If bottom border
-        boolean collidedBorder = checkBorderCollision(),
+        boolean collidedBorder = false,
                 collidedPlatform = false,
                 collidedBrick = false;
+        int brickIndex = getNearestBrickIndex();
+        double distanceToBorder = getBorderCollisionDistance(),
+                distanceToPlatform = getPlatformCollisionDistance(),
+                distanceToNearestBrick = getBrickCollisionDistance(brickIndex);
+
+        if (distanceToBorder != -1)
+            collidedBorder = true;
+        if (distanceToPlatform != -1)
+            collidedPlatform = true;
+        if (distanceToNearestBrick != -1)
+            collidedBrick = true;
+
+        distanceToBorder = distanceToBorder == -1 ? Double.MAX_VALUE : distanceToBorder;
+        distanceToPlatform = distanceToPlatform == -1 ? Double.MAX_VALUE : distanceToPlatform;
+        distanceToNearestBrick = distanceToNearestBrick == -1 ? Double.MAX_VALUE : distanceToNearestBrick;
+
+        if (distanceToBorder < distanceToPlatform && distanceToBorder < distanceToNearestBrick)
+            handleBorderCollision();
+        else if (distanceToPlatform < distanceToNearestBrick)
+            handlePlatformCollision();
+        else handleBricksCollision(brickIndex);
+
         return collidedBorder | collidedPlatform | collidedBrick;
     }
 

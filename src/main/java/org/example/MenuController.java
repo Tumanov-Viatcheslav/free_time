@@ -27,6 +27,5 @@ public class MenuController {
     public void initialize() {
         final String arkanoidButtonText = "Arkanoid";
         arkanoidButton.setText(arkanoidButtonText);
-        arkanoidButton.setFocusTraversable(false);
     }
 }

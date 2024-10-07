@@ -20,7 +20,7 @@ import org.example.arkanoid.view.PlatformView;
 public class ArkanoidController {
     private final double DEFAULT_STEP_SIZE = 10.0,
             WINDOW_PROPORTION = 3.0 / 4.0,
-            DEFAULT_BALL_SPEED = 100.0,
+            DEFAULT_BALL_SPEED = 200.0,
             PLATFORM_ELEVATION = 20.0;
     private final int DEFAULT_FPS = 30;
 
@@ -28,6 +28,7 @@ public class ArkanoidController {
     private final DoubleProperty scale = new SimpleDoubleProperty();
     private final BooleanProperty lost = new SimpleBooleanProperty(false);
     private double stepSize = DEFAULT_STEP_SIZE;
+    private boolean started = false;
 
     @FXML
     private Label labelArkanoid;
@@ -73,11 +74,13 @@ public class ArkanoidController {
     private void startGame() {
         ball.centerXProperty().unbind();
         ball.setAnimation(DEFAULT_FPS);
+        ball.hasStarted();
         ball.startAnimation();
     }
 
     private void lostGame() {
         labelArkanoid.setText("Lost");
+        started = false;
     }
 
     @FXML
@@ -101,7 +104,10 @@ public class ArkanoidController {
                 moveRight();
                 break;
             case SPACE:
+                if (started)
+                    break;
                 startGame();
+                started = true;
                 break;
             case ESCAPE:
                 switchToMenu();
@@ -113,18 +119,17 @@ public class ArkanoidController {
     public void initialize() {
         String labelText = "ARKANOID";
         labelArkanoid.setText(labelText);
-        menuButton.setFocusTraversable(false);
         bindBorderView();
         border = new BorderGame();
         border.setY(borderView.getY());
         initPlatform();
         initBall();
         scale.bind(borderView.widthProperty().divide(App.initialWidth));
-        platformView.setFocusTraversable(true);
         bindPlatformView();
         bindBallView();
         addResizeListeners();
-        lost.addListener(((observable, oldValue, newValue) -> {if ((boolean) newValue) lostGame();}));
+        lost.bind(ball.lostProperty());
+        lost.addListener(((observable, oldValue, newValue) -> {if (newValue) lostGame();}));
     }
 
     private void addResizeListeners() {

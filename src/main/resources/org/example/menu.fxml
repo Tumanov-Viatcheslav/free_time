@@ -8,8 +8,8 @@
 <VBox alignment="CENTER" spacing="20.0" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.example.MenuController">
    <children>
       <Label text="Menu" />
-      <Button fx:id="arkanoidButton" onAction="#switchToSecondary"/>
-      <Button fx:id="exitButton" text="Exit" onAction="#exit"/>
+      <Button fx:id="arkanoidButton" onAction="#switchToSecondary" focusTraversable="false"/>
+      <Button fx:id="exitButton" text="Exit" onAction="#exit" focusTraversable="false"/>
    </children>
    <padding>
       <Insets bottom="20.0" left="20.0" right="20.0" top="20.0" />
