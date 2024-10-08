@@ -141,46 +141,46 @@ public class Ball extends Circle {
         if (collidedUpperBorder && collidedLeftBorder) {
             borderIndicator = newY - border.getY() < newX - border.getX() ? 2 : -1;
             if (borderIndicator == 2) {
-                moveTo(getCenterX() - (getCenterY() - border.getY()), border.getY());
+                moveTo(getCenterX() - (getCenterY() - border.getY() - getRadius()), border.getY() + getRadius());
                 turnLeft();
             }
             if (borderIndicator == -1) {
-                moveTo(border.getX(), getCenterY() - (getCenterX() - border.getX()));
+                moveTo(border.getX() + getRadius(), getCenterY() - (getCenterX() - border.getX() - getRadius()));
                 turnRight();
             }
         }
         if (collidedUpperBorder && collidedRightBorder) {
             borderIndicator = newY - border.getY() < newX - border.getX() - border.getWidth() ? 2 : 1;
             if (borderIndicator == 2) {
-                moveTo(getCenterX() + (getCenterY() - border.getY()), border.getY());
+                moveTo(getCenterX() + (getCenterY() - border.getY() - getRadius()), border.getY() + getRadius());
                 turnRight();
             }
             if (borderIndicator == 1) {
-                moveTo(border.getWidth(), getCenterY() - (border.getWidth() - getCenterX()));
+                moveTo(border.getWidth() - getRadius(), getCenterY() - (border.getWidth() - getCenterX() - getRadius()));
                 turnLeft();
             }
         }
         if (collidedBottomBorder && collidedLeftBorder) {
             borderIndicator = newY - border.getY() < newX - border.getX() ? -2 : -1;
             if (borderIndicator == -2) {
-                moveTo(getCenterX() - (border.getHeight() - getCenterY()), border.getHeight());
+                moveTo(getCenterX() - (border.getHeight() - getCenterY() - getRadius()), border.getHeight() - getRadius());
                 turnRight();
                 stopAnimation();
                 hasLost();
             }
             if (borderIndicator == -1) {
-                moveTo(border.getX(), getCenterY() + (getCenterX() - border.getX()));
+                moveTo(border.getX()  + getRadius(), getCenterY() + (getCenterX() - border.getX() - getRadius()));
                 turnLeft();
             }
         }
         if (collidedBottomBorder && collidedRightBorder){
             borderIndicator = newY - border.getY() < newX - border.getX() ? -2 : 1;
             if (borderIndicator == -2) {
-                moveTo(getCenterX() + (border.getHeight() - getCenterY()), border.getHeight());
+                moveTo(getCenterX() + (border.getHeight() - getCenterY() - getRadius()), border.getHeight() - getRadius());
                 turnLeft();
             }
             if (borderIndicator == 1) {
-                moveTo(border.getWidth(), getCenterY() + (border.getWidth() - getCenterX()));
+                moveTo(border.getWidth() - getRadius(), getCenterY() + (border.getWidth() - getCenterX() - getRadius()));
                 turnRight();
                 stopAnimation();
                 hasLost();
