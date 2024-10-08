@@ -129,8 +129,6 @@ public class Ball extends Circle {
         if (newX > border.getWidth() - getRadius())
             collidedRightBorder = true;
 
-
-        // TODO handle when ball is right in the corner
         // Check collisions in corner
         // -2 Upper border collision first
         // -1 Left border collision first
