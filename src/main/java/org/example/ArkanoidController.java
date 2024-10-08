@@ -30,8 +30,6 @@ public class ArkanoidController {
     private boolean started = false;
 
     @FXML
-    private Label labelArkanoid;
-    @FXML
     private AnchorPane pane;
     @FXML
     private BorderGameView borderView;
@@ -115,8 +113,6 @@ public class ArkanoidController {
 
     @FXML
     public void initialize() {
-        String labelText = "ARKANOID";
-        labelArkanoid.setText(labelText);
         bindBorderView();
         border = new BorderGame();
         border.setY(borderView.getY());

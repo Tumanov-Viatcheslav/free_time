@@ -10,7 +10,7 @@
 <AnchorPane fx:id="pane" onKeyPressed="#handleOnKeyPressed"
             xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.example.ArkanoidController">
     <Button fx:id="menuButton" AnchorPane.rightAnchor="0.0" onAction="#switchToMenu" text="Exit to menu" focusTraversable="false"/>
-    <Label fx:id="labelArkanoid"/>
+    <Label fx:id="labelArkanoid" text="ARKANOID"/>
     <BorderGameView fx:id="borderView" fill="black"
                     AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="30.0" y="30"/>
     <PlatformView fx:id="platformView" fill="burlywood" stroke="black" focusTraversable="true"/>
