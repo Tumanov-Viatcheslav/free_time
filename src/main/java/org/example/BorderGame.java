@@ -1,10 +1,64 @@
 package org.example;
 
-import javafx.scene.shape.Rectangle;
+import javafx.beans.property.DoubleProperty;
+import javafx.beans.property.SimpleDoubleProperty;
 
-public class BorderGame extends Rectangle {
-    //TODO take needed params from Rectangle and get rid of extends
+public class BorderGame {
+    private final DoubleProperty x = new SimpleDoubleProperty();
+    private final DoubleProperty y = new SimpleDoubleProperty();
+    private final DoubleProperty width = new SimpleDoubleProperty();
+    private final DoubleProperty height = new SimpleDoubleProperty();
+
     public BorderGame() {
-        super(640, 480);
+        setWidth(640);
+        setHeight(480);
+    }
+
+    public double getX() {
+        return x.get();
+    }
+
+    public DoubleProperty xProperty() {
+        return x;
+    }
+
+    public void setX(double x) {
+        this.x.set(x);
+    }
+
+    public double getY() {
+        return y.get();
+    }
+
+    public DoubleProperty yProperty() {
+        return y;
+    }
+
+    public void setY(double y) {
+        this.y.set(y);
+    }
+
+    public double getWidth() {
+        return width.get();
+    }
+
+    public DoubleProperty widthProperty() {
+        return width;
+    }
+
+    public void setWidth(double width) {
+        this.width.set(width);
+    }
+
+    public double getHeight() {
+        return height.get();
+    }
+
+    public DoubleProperty heightProperty() {
+        return height;
+    }
+
+    public void setHeight(double height) {
+        this.height.set(height);
     }
 }

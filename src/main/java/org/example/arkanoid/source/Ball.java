@@ -2,22 +2,25 @@ package org.example.arkanoid.source;
 
 import javafx.animation.AnimationTimer;
 import javafx.beans.property.BooleanProperty;
+import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.SimpleBooleanProperty;
-import javafx.scene.shape.Circle;
+import javafx.beans.property.SimpleDoubleProperty;
 import org.example.BorderGame;
 
-public class Ball extends Circle {
-    //TODO take needed params from Circle and get rid of extends
+public class Ball {
     private AnimationTimer animationBall;
     private BallDirection direction = BallDirection.UP_RIGHT;
     private double speed;
     private BorderGame border;
     private Platform platform;
 
+    private final DoubleProperty centerX = new SimpleDoubleProperty();
+    private final DoubleProperty centerY = new SimpleDoubleProperty();
+    private final DoubleProperty radius = new SimpleDoubleProperty();
     private final BooleanProperty lost = new SimpleBooleanProperty();
 
     public Ball() {
-        super(10);
+        setRadiusProperty(10);
     }
 
     public BallDirection getDirection() {
@@ -396,5 +399,41 @@ public class Ball extends Circle {
             case DOWN_RIGHT:
                 moveTo(getCenterX() + speed, getCenterY() + speed);
         }
+    }
+
+    public double getCenterX() {
+        return centerX.get();
+    }
+
+    public DoubleProperty centerXProperty() {
+        return centerX;
+    }
+
+    public void setCenterX(double centerXProperty) {
+        this.centerX.set(centerXProperty);
+    }
+
+    public double getCenterY() {
+        return centerY.get();
+    }
+
+    public DoubleProperty centerYProperty() {
+        return centerY;
+    }
+
+    public void setCenterY(double centerYProperty) {
+        this.centerY.set(centerYProperty);
+    }
+
+    public double getRadius() {
+        return radius.get();
+    }
+
+    public DoubleProperty radiusProperty() {
+        return radius;
+    }
+
+    public void setRadiusProperty(double radiusProperty) {
+        this.radius.set(radiusProperty);
     }
 }
