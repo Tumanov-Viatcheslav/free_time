@@ -100,15 +100,6 @@ public class Ball extends Circle {
     }
 
     /**
-     * returns  true if collided with platform
-     *          false if not collided with platform
-     */
-    private boolean checkPlatformCollision() {
-        double oldX = getCenterX(), oldY = getCenterY(), newX = getNewX(oldX), newY = getNewY(oldY);
-        return false;
-    }
-
-    /**
      * returns  true if collided with border
      *          false if not collided with border
      */
@@ -240,6 +231,20 @@ public class Ball extends Circle {
      */
     private void handlePlatformCollision() {
         // TODO handle collision
+        double oldX = getCenterX(), oldY = getCenterY(), newX = getNewX(oldX), newY = getNewY(oldY), max = -1,
+                k = (newY -oldY) / (newX - oldX), c = oldY - k * oldX,
+                platformUpBorder = platform.getY(), platformLeftBorder = platform.getX(), platformRightBorder = platform.getX() + platform.getWidth();
+
+        //Upper platform border
+        double xIntersectionCoordinate = (platformUpBorder - c) / k;
+        if ((xIntersectionCoordinate >= platform.getX() - getRadius() && xIntersectionCoordinate <= platform.getX() + platform.getWidth() + getRadius()) &&
+                (newY > platformUpBorder - getRadius())
+        ) {
+            moveTo((platformUpBorder - getRadius() - c) / k, platformUpBorder - getRadius());
+            if (k > 0)
+                turnLeft();
+            else turnRight();
+        }
     }
 
     /**
@@ -275,16 +280,20 @@ public class Ball extends Circle {
      */
     private double getPlatformCollisionDistance() {
         // TODO calculate distance
-        double oldX = getCenterX(), oldY = getCenterY(), newX = getNewX(oldX), newY = getNewY(oldY), max = -1;
+        double oldX = getCenterX(), oldY = getCenterY(), newX = getNewX(oldX), newY = getNewY(oldY), max = -1,
+                k = (newY - oldY) / (newX - oldX), c = oldY - k * oldX,
+                platformUpBorder = platform.getY(), platformLeftBorder = platform.getX(), platformRightBorder = platform.getX() + platform.getWidth();
 
-//        if (newY < border.getY() + getRadius())
-//            max = Math.max(max, oldY - border.getY() - getRadius());
-//        if (newX < border.getX() + getRadius())
-//            max = Math.max(max, oldX - border.getX() - getRadius());
-//        if (newY > border.getHeight() - getRadius())
-//            max = Math.max(max, border.getHeight() - getRadius() - oldY);
-//        if (newX > border.getWidth() - getRadius())
-//            max = Math.max(max, border.getWidth() - getRadius() - oldX);
+        //Upper platform border
+        double xIntersectionCoordinate = (platformUpBorder - getRadius() - c) / k;
+        if ((xIntersectionCoordinate >= platform.getX() - getRadius() && xIntersectionCoordinate <= platform.getX() + platform.getWidth() + getRadius()) &&
+                (newY > platformUpBorder - getRadius())
+        )
+            return platformUpBorder - oldY - getRadius();
+        //Left platform border
+        //Right platform border
+
+
         return max;
     }
 
