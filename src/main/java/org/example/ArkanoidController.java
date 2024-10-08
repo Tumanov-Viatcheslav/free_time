@@ -33,8 +33,6 @@ public class ArkanoidController {
     @FXML
     private Label labelArkanoid;
     @FXML
-    private Button menuButton;
-    @FXML
     private AnchorPane pane;
     @FXML
     private BorderGameView borderView;
@@ -43,6 +41,8 @@ public class ArkanoidController {
     @FXML
     private BallView ballView;
     @FXML
+    public Label labelLost;
+
     private BorderGame border;
     private Platform platform;
     private Ball ball;
@@ -73,13 +73,12 @@ public class ArkanoidController {
 
     private void startGame() {
         ball.centerXProperty().unbind();
-        ball.setAnimation(DEFAULT_FPS);
         ball.hasStarted();
         ball.startAnimation();
     }
 
     private void lostGame() {
-        labelArkanoid.setText("Lost");
+        labelLost.setVisible(true);
         started = false;
     }
 
@@ -130,6 +129,8 @@ public class ArkanoidController {
         addResizeListeners();
         lost.bind(ball.lostProperty());
         lost.addListener(((observable, oldValue, newValue) -> {if (newValue) lostGame();}));
+        labelLost.translateXProperty().bind(borderView.widthProperty().subtract(labelLost.widthProperty()).divide(2));
+        labelLost.translateYProperty().bind(borderView.heightProperty().subtract(borderView.yProperty()).subtract(labelLost.heightProperty()).divide(2));
     }
 
     private void addResizeListeners() {
@@ -172,6 +173,7 @@ public class ArkanoidController {
         ball.setBorder(border);
         ball.setCenterY(platform.getY() - platform.getHeight() - ball.getRadius());
         ball.setSpeed(DEFAULT_BALL_SPEED / DEFAULT_FPS);
+        ball.setAnimation(DEFAULT_FPS);
     }
 
     private void bindPlatformView() {
