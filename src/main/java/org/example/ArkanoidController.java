@@ -20,9 +20,9 @@ import org.example.arkanoid.view.PlatformView;
 public class ArkanoidController {
     private final double DEFAULT_STEP_SIZE = 10.0,
             WINDOW_PROPORTION = 3.0 / 4.0,
-            DEFAULT_BALL_SPEED = 200.0,
+            DEFAULT_BALL_SPEED = 250.0,
             PLATFORM_ELEVATION = 20.0;
-    private final int DEFAULT_FPS = 30;
+    private final int DEFAULT_FPS = 60;
 
 
     private final DoubleProperty scale = new SimpleDoubleProperty();
