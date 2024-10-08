@@ -4,6 +4,7 @@ import javafx.scene.shape.Rectangle;
 import org.example.BorderGame;
 
 public class Platform extends Rectangle {
+    //TODO take needed params from Rectangle and get rid of extends
     private BorderGame border;
 
     public Platform() {

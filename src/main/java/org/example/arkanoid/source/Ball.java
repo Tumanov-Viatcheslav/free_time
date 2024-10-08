@@ -7,6 +7,7 @@ import javafx.scene.shape.Circle;
 import org.example.BorderGame;
 
 public class Ball extends Circle {
+    //TODO take needed params from Circle and get rid of extends
     private AnimationTimer animationBall;
     private BallDirection direction = BallDirection.UP_RIGHT;
     private double speed;
@@ -186,7 +187,6 @@ public class Ball extends Circle {
                 moveTo(getCenterX() + (getCenterY() - (border.getY() + getRadius())), border.getY() + getRadius());
                 turnRight();
             }
-            // TODO add exceptions on different directions
         }
         if (collidedLeftBorder) {
             if (direction == BallDirection.UP_LEFT) {
@@ -197,7 +197,6 @@ public class Ball extends Circle {
                 moveTo(border.getX() + getRadius(), getCenterY() + (getCenterX() - (border.getX() + getRadius())));
                 turnLeft();
             }
-            // TODO add exceptions on different directions
         }
         if (collidedBottomBorder) {
             if (direction == BallDirection.DOWN_RIGHT) {
@@ -208,7 +207,6 @@ public class Ball extends Circle {
                 moveTo(getCenterX() - ((border.getHeight() - getRadius()) - getCenterY()), border.getHeight() - getRadius());
                 turnRight();
             }
-            // TODO add exceptions on different directions
             stopAnimation();
             hasLost();
         }
@@ -221,7 +219,6 @@ public class Ball extends Circle {
                 moveTo(border.getWidth() - getRadius(), getCenterY() + ((border.getWidth() - getRadius()) - getCenterX()));
                 turnRight();
             }
-            // TODO add exceptions on different directions
         }
     }
 
@@ -230,7 +227,6 @@ public class Ball extends Circle {
      *          false if not collided with border
      */
     private void handlePlatformCollision() {
-        // TODO handle collision
         double oldX = getCenterX(), oldY = getCenterY(), newX = getNewX(oldX), newY = getNewY(oldY), max = -1,
                 k = (newY -oldY) / (newX - oldX), c = oldY - k * oldX,
                 platformUpBorder = platform.getY(), platformLeftBorder = platform.getX(), platformRightBorder = platform.getX() + platform.getWidth();
@@ -271,8 +267,8 @@ public class Ball extends Circle {
     }
 
     /**
-     * returns  true if collided with border
-     *          false if not collided with border
+     * returns  true if collided with brick
+     *          false if not collided with brick
      */
     private void handleBricksCollision(int brickIndex) {
         // TODO handle collision
@@ -302,7 +298,6 @@ public class Ball extends Circle {
      *          d - distance to platform if the is collision on movement execution
      */
     private double getPlatformCollisionDistance() {
-        // TODO calculate distance
         double oldX = getCenterX(), oldY = getCenterY(), newX = getNewX(oldX), newY = getNewY(oldY), max = -1,
                 k = (newY - oldY) / (newX - oldX), c = oldY - k * oldX,
                 platformUpBorder = platform.getY(), platformLeftBorder = platform.getX(), platformRightBorder = platform.getX() + platform.getWidth();
