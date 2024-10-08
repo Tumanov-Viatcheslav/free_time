@@ -103,7 +103,7 @@ public class ArkanoidController {
                 moveRight();
                 break;
             case SPACE:
-                if (started)
+                if (started || lost.get())
                     break;
                 startGame();
                 started = true;
@@ -163,7 +163,7 @@ public class ArkanoidController {
     private void initPlatform() {
         platform = new Platform();
         platform.setBorder(border);
-        platform.setY(border.getHeight() - PLATFORM_ELEVATION);
+        platform.setY(border.getHeight() - platform.getHeight() - PLATFORM_ELEVATION);
         platform.setX((border.getWidth() - platform.getWidth()) / 2);
     }
     private void initBall() {
@@ -171,7 +171,7 @@ public class ArkanoidController {
         ball.centerXProperty().bind(platform.xProperty().add(platform.widthProperty().divide(2.0)));
         ball.setPlatform(platform);
         ball.setBorder(border);
-        ball.setCenterY(platform.getY() - platform.getHeight() - ball.getRadius());
+        ball.setCenterY(platform.getY() - ball.getRadius());
         ball.setSpeed(DEFAULT_BALL_SPEED / DEFAULT_FPS);
         ball.setAnimation(DEFAULT_FPS);
     }

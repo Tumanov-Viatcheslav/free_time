@@ -238,12 +238,35 @@ public class Ball extends Circle {
         //Upper platform border
         double xIntersectionCoordinate = (platformUpBorder - c) / k;
         if ((xIntersectionCoordinate >= platform.getX() - getRadius() && xIntersectionCoordinate <= platform.getX() + platform.getWidth() + getRadius()) &&
-                (newY > platformUpBorder - getRadius())
+                (newY > platformUpBorder - getRadius() && oldY < platformUpBorder - getRadius())
         ) {
             moveTo((platformUpBorder - getRadius() - c) / k, platformUpBorder - getRadius());
             if (k > 0)
                 turnLeft();
             else turnRight();
+            return;
+        }
+        //Left platform border
+        double yLeftIntersectionCoordinate = k * (platformLeftBorder - getRadius()) + c;
+        if ((yLeftIntersectionCoordinate >= platform.getY() - getRadius() && yLeftIntersectionCoordinate <= platform.getY() + platform.getHeight() + getRadius()) &&
+                (newX >= platformLeftBorder - getRadius() && oldX <= platformLeftBorder - getRadius())
+        ) {
+            moveTo(platformLeftBorder - getRadius(), k * (platformLeftBorder - getRadius()) + c);
+            if (k > 0)
+                turnRight();
+            else turnLeft();
+            return;
+        }
+        //Right platform border
+        double yRightIntersectionCoordinate = k * (platformRightBorder - getRadius()) + c;
+        if ((yRightIntersectionCoordinate >= platform.getY() - getRadius() && yRightIntersectionCoordinate <= platform.getY() + platform.getHeight() + getRadius()) &&
+                (newX < platformRightBorder + getRadius() && oldX > platformRightBorder + getRadius())
+        ) {
+            moveTo(platformRightBorder + getRadius(), k * (platformRightBorder + getRadius()) + c);
+            if (k > 0)
+                turnRight();
+            else turnLeft();
+            return;
         }
     }
 
@@ -287,11 +310,21 @@ public class Ball extends Circle {
         //Upper platform border
         double xIntersectionCoordinate = (platformUpBorder - getRadius() - c) / k;
         if ((xIntersectionCoordinate >= platform.getX() - getRadius() && xIntersectionCoordinate <= platform.getX() + platform.getWidth() + getRadius()) &&
-                (newY > platformUpBorder - getRadius())
+                (newY > platformUpBorder - getRadius() && oldY < platformUpBorder - getRadius())
         )
             return platformUpBorder - oldY - getRadius();
         //Left platform border
+        double yLeftIntersectionCoordinate = k * (platformLeftBorder - getRadius()) + c;
+        if ((yLeftIntersectionCoordinate >= platform.getY() - getRadius() && yLeftIntersectionCoordinate <= platform.getY() + platform.getHeight() + getRadius()) &&
+                (newX > platformLeftBorder - getRadius() && oldX < platformLeftBorder - getRadius())
+        )
+            return platformLeftBorder - oldX - getRadius();
         //Right platform border
+        double yRightIntersectionCoordinate = k * (platformRightBorder + getRadius()) + c;
+        if ((yRightIntersectionCoordinate >= platform.getY() - getRadius() && yRightIntersectionCoordinate <= platform.getY() + platform.getHeight() + getRadius()) &&
+                (newX < platformRightBorder + getRadius() && oldX > platformRightBorder + getRadius())
+        )
+            return oldX - platformRightBorder - getRadius();
 
 
         return max;
