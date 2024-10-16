@@ -3,12 +3,13 @@ package org.example.arkanoid.source;
 import javafx.animation.AnimationTimer;
 
 public class BallAnimation extends AnimationTimer {
-    Ball ball;
+    // TODO Think if this can be moved somehow
+    Arkanoid game;
     int fps;
     private long previousFrameTime = 0;
 
-    public BallAnimation(Ball ball, int fps) {
-        this.ball = ball;
+    public BallAnimation(Arkanoid game, int fps) {
+        this.game = game;
         this.fps = fps;
     }
 
@@ -33,6 +34,6 @@ public class BallAnimation extends AnimationTimer {
     }
 
     private void doHandle() {
-        ball.move();
+        game.moveBall();
     }
 }

@@ -11,6 +11,7 @@ import javafx.scene.control.Label;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.AnchorPane;
+import org.example.arkanoid.source.Arkanoid;
 import org.example.arkanoid.source.Ball;
 import org.example.arkanoid.source.Platform;
 import org.example.arkanoid.view.BallView;
@@ -40,6 +41,7 @@ public class ArkanoidController {
     @FXML
     public Label labelLost;
 
+    private Arkanoid game;
     private BorderGame border;
     private Platform platform;
     private Ball ball;
@@ -47,7 +49,7 @@ public class ArkanoidController {
     @FXML
     private void switchToMenu() throws IOException {
         App.setRoot("menu");
-        ball.stopAnimation();
+        game.stopAnimation();
     }
 
     private void moveUp() {
@@ -61,17 +63,19 @@ public class ArkanoidController {
     }
 
     private void moveLeft() {
-        platform.moveLeft(stepSize);
+        if (!lost.get())
+            platform.moveLeft(stepSize);
     }
 
     private void moveRight() {
-        platform.moveRight(stepSize);
+        if (!lost.get())
+            platform.moveRight(stepSize);
     }
 
     private void startGame() {
         ball.centerXProperty().unbind();
-        ball.hasStarted();
-        ball.startAnimation();
+        game.hasStarted();
+        game.startAnimation();
     }
 
     private void lostGame() {
@@ -118,11 +122,12 @@ public class ArkanoidController {
         border.setY(borderView.getY());
         initPlatform();
         initBall();
+        initGame();
         scale.bind(borderView.widthProperty().divide(App.initialWidth));
         bindPlatformView();
         bindBallView();
         addResizeListeners();
-        lost.bind(ball.lostProperty());
+        lost.bind(game.lostProperty());
         lost.addListener(((observable, oldValue, newValue) -> {if (newValue) lostGame();}));
         labelLost.translateXProperty().bind(borderView.widthProperty().subtract(labelLost.widthProperty()).divide(2));
         labelLost.translateYProperty().bind(borderView.heightProperty().subtract(borderView.yProperty()).subtract(labelLost.heightProperty()).divide(2));
@@ -149,6 +154,13 @@ public class ArkanoidController {
         });
     }
 
+    private void initGame() {
+        game = new Arkanoid();
+        game.setBorder(border);
+        game.setPlatform(platform);
+        game.setBall(ball);
+        game.setAnimation(DEFAULT_FPS);
+    }
 
     private void bindBorderView() {
         borderView.widthProperty().bind(pane.widthProperty());
@@ -164,11 +176,8 @@ public class ArkanoidController {
     private void initBall() {
         ball = new Ball();
         ball.centerXProperty().bind(platform.xProperty().add(platform.widthProperty().divide(2.0)));
-        ball.setPlatform(platform);
-        ball.setBorder(border);
         ball.setCenterY(platform.getY() - ball.getRadius());
         ball.setSpeed(DEFAULT_BALL_SPEED / DEFAULT_FPS);
-        ball.setAnimation(DEFAULT_FPS);
     }
 
     private void bindPlatformView() {
