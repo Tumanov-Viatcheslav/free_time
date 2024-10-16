@@ -230,8 +230,8 @@ public class Ball {
      *          false if not collided with border
      */
     private void handlePlatformCollision() {
-        double oldX = getCenterX(), oldY = getCenterY(), newX = getNewX(oldX), newY = getNewY(oldY), max = -1,
-                k = (newY -oldY) / (newX - oldX), c = oldY - k * oldX,
+        double oldX = getCenterX(), oldY = getCenterY(), newX = getNewX(oldX), newY = getNewY(oldY),
+                k = (newY - oldY) / (newX - oldX), c = oldY - k * oldX,
                 platformUpBorder = platform.getY(), platformLeftBorder = platform.getX(), platformRightBorder = platform.getX() + platform.getWidth();
 
         //Upper platform border
@@ -257,7 +257,7 @@ public class Ball {
             return;
         }
         //Right platform border
-        double yRightIntersectionCoordinate = k * (platformRightBorder - getRadius()) + c;
+        double yRightIntersectionCoordinate = k * (platformRightBorder + getRadius()) + c;
         if ((yRightIntersectionCoordinate >= platform.getY() - getRadius() && yRightIntersectionCoordinate <= platform.getY() + platform.getHeight() + getRadius()) &&
                 (newX < platformRightBorder + getRadius() && oldX > platformRightBorder + getRadius())
         ) {
