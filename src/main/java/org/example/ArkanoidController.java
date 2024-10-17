@@ -64,12 +64,12 @@ public class ArkanoidController {
 
     private void moveLeft() {
         if (!lost.get())
-            platform.moveLeft(stepSize);
+            game.movePlatformLeft(stepSize);
     }
 
     private void moveRight() {
         if (!lost.get())
-            platform.moveRight(stepSize);
+            game.movePlatformRight(stepSize);
     }
 
     private void startGame() {
@@ -83,6 +83,7 @@ public class ArkanoidController {
         started = false;
     }
 
+    // TODO make platform speed and direction change onkeypressed and onkeyreleased
     @FXML
     private void handleOnKeyPressed(KeyEvent keyEvent) throws IOException {
         KeyCode key = keyEvent.getCode();
@@ -177,7 +178,6 @@ public class ArkanoidController {
 
     private void initPlatform() {
         platform = new Platform();
-        platform.setBorder(border);
         platform.setY(border.getHeight() - platform.getHeight() - PLATFORM_ELEVATION);
         platform.setX((border.getWidth() - platform.getWidth()) / 2);
     }

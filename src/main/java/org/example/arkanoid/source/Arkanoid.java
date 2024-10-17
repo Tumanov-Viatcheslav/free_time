@@ -41,6 +41,21 @@ public class Arkanoid {
         this.ball = ball;
     }
 
+    //==================================================================================================================
+    // Move platform methods
+    //==================================================================================================================
+
+    public void movePlatformLeft(double step) {
+        if (platform.getX() - step > border.getX())
+            platform.setX(platform.getX() - step);
+        else platform.setX(border.getX());
+    }
+
+    public void movePlatformRight(double step) {
+        if (platform.getX() + platform.getWidth() + step < border.getWidth())
+            platform.setX(platform.getX() + step);
+        else platform.setX(border.getWidth() - platform.getWidth());
+    }
 
     //==================================================================================================================
     // Ball moving and collision handle

@@ -4,6 +4,7 @@ import javafx.animation.AnimationTimer;
 
 public class BallAnimation extends AnimationTimer {
     // TODO Think if this can be moved somehow
+    // TODO Try adding platform animation for smooth movement
     Arkanoid game;
     int fps;
     private long previousFrameTime = 0;
