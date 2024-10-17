@@ -118,8 +118,7 @@ public class ArkanoidController {
     @FXML
     public void initialize() {
         bindBorderView();
-        border = new BorderGame();
-        border.setY(borderView.getY());
+        initBorder();
         initPlatform();
         initBall();
         initGame();
@@ -127,6 +126,15 @@ public class ArkanoidController {
         bindPlatformView();
         bindBallView();
         addResizeListeners();
+        initAndBindLost();
+    }
+
+    private void initBorder() {
+        border = new BorderGame();
+        border.setY(borderView.getY());
+    }
+
+    private void initAndBindLost() {
         lost.bind(game.lostProperty());
         lost.addListener(((observable, oldValue, newValue) -> {if (newValue) lostGame();}));
         labelLost.translateXProperty().bind(borderView.widthProperty().subtract(labelLost.widthProperty()).divide(2));
