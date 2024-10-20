@@ -1,7 +1,10 @@
 package org.example;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
+import javafx.beans.binding.Bindings;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.SimpleBooleanProperty;
@@ -13,8 +16,10 @@ import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.AnchorPane;
 import org.example.arkanoid.source.Arkanoid;
 import org.example.arkanoid.source.Ball;
+import org.example.arkanoid.source.Brick;
 import org.example.arkanoid.source.Platform;
 import org.example.arkanoid.view.BallView;
+import org.example.arkanoid.view.BrickView;
 import org.example.arkanoid.view.PlatformView;
 
 public class ArkanoidController {
@@ -48,6 +53,7 @@ public class ArkanoidController {
     private BorderGame border;
     private Platform platform;
     private Ball ball;
+    private final List<Brick> bricks = new ArrayList<>();
 
     @FXML
     private void switchToMenu() throws IOException {
@@ -85,7 +91,6 @@ public class ArkanoidController {
         started = false;
     }
 
-    // TODO make platform speed and direction change onkeypressed and onkeyreleased
     @FXML
     private void handleOnKeyPressed(KeyEvent keyEvent) throws IOException {
         KeyCode key = keyEvent.getCode();
@@ -192,13 +197,33 @@ public class ArkanoidController {
         initBorder();
         initPlatform();
         initBall();
+        initBricks();
         game = new Arkanoid();
         game.setBorder(border);
         game.setPlatform(platform);
         game.setBall(ball);
+        game.setBricks(bricks);
         game.setAnimation(DEFAULT_FPS);
         game.leftPressedProperty().bind(leftPressed);
         game.rightPressedProperty().bind(rightPressed);
+    }
+
+    private void initBricks() {
+        // TODO load bricks from resource file level1.txt (or .json, .csv)
+        Brick brick = new Brick(100, 100, 50, 20);
+        bricks.add(brick);
+        bindBrickView(brick);
+    }
+
+    private void bindBrickView(Brick brick) {
+        BrickView brickView = new BrickView();
+        pane.getChildren().add(brickView);
+        brickView.xProperty().bind(scale.multiply(brick.xProperty()));
+        brickView.yProperty().bind(scale.multiply(brick.yProperty()));
+        brickView.widthProperty().bind(scale.multiply(brick.widthProperty()));
+        brickView.heightProperty().bind(scale.multiply(brick.heightProperty()));
+        brickView.fillProperty().bind(Bindings.createObjectBinding(() -> BrickView.COLOR_OF_HP.get(brick.getHp()), brick.hpProperty()));
+        brickView.visibleProperty().bind(brick.destroyedProperty().not());
     }
 
     private void bindBorderView() {

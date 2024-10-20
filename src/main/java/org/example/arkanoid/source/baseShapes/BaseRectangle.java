@@ -9,6 +9,15 @@ public abstract class BaseRectangle {
     private final DoubleProperty width = new SimpleDoubleProperty();
     private final DoubleProperty height = new SimpleDoubleProperty();
 
+    public BaseRectangle() {}
+
+    public BaseRectangle(double x, double y, double width, double height) {
+        setX(x);
+        setY(y);
+        setWidth(width);
+        setHeight(height);
+    }
+
     public double getX() {
         return x.get();
     }

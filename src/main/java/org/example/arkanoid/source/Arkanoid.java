@@ -5,6 +5,8 @@ import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 import org.example.BorderGame;
 
+import java.util.List;
+
 public class Arkanoid {
     private AnimationTimer gameAnimation;
     private final BooleanProperty lost = new SimpleBooleanProperty();
@@ -15,6 +17,9 @@ public class Arkanoid {
     private BorderGame border;
     private Platform platform;
     private Ball ball;
+    // TODO change sortable by distance with fast elements addition and search
+    private List<Brick> bricks = null;
+
     private boolean ballAnimationStarted = false;
 
     //==================================================================================================================
@@ -43,6 +48,14 @@ public class Arkanoid {
 
     public void setBall(Ball ball) {
         this.ball = ball;
+    }
+
+    public List<Brick> getBricks() {
+        return bricks;
+    }
+
+    public void setBricks(List<Brick> bricks) {
+        this.bricks = bricks;
     }
 
     //==================================================================================================================
