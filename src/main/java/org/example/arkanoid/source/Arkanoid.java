@@ -6,15 +6,19 @@ import javafx.beans.property.SimpleBooleanProperty;
 import org.example.BorderGame;
 
 public class Arkanoid {
-    private AnimationTimer animationBall;
+    private AnimationTimer gameAnimation;
     private final BooleanProperty lost = new SimpleBooleanProperty();
+    // TODO fix minor bug: two keys for left pressed, one is released then second pressed key is ignored (maybe should only leave one control key set)
+    private final BooleanProperty leftPressed = new SimpleBooleanProperty();
+    private final BooleanProperty rightPressed = new SimpleBooleanProperty();
 
     private BorderGame border;
     private Platform platform;
     private Ball ball;
+    private boolean ballAnimationStarted = false;
 
     //==================================================================================================================
-    // Getters and setters
+    // Getters and setters for game components
     //==================================================================================================================
 
     public BorderGame getBorder() {
@@ -55,6 +59,37 @@ public class Arkanoid {
         if (platform.getX() + platform.getWidth() + step < border.getWidth())
             platform.setX(platform.getX() + step);
         else platform.setX(border.getWidth() - platform.getWidth());
+    }
+
+    /**
+     * keysPressed: [<-/A] - LEFT
+     * [->/D] - RIGHT
+     * [EMPTY] || [<-/A]+[->/D] - STILL
+     */
+    public void movePlatform() {
+        if (isLeftPressed() == isRightPressed()) {
+            return;
+        }
+        if (isLeftPressed()) {
+            movePlatformLeft(platform.getSpeed());
+        }
+        else movePlatformRight(platform.getSpeed());
+    }
+
+    public boolean isLeftPressed() {
+        return leftPressed.get();
+    }
+
+    public BooleanProperty leftPressedProperty() {
+        return leftPressed;
+    }
+
+    public boolean isRightPressed() {
+        return rightPressed.get();
+    }
+
+    public BooleanProperty rightPressedProperty() {
+        return rightPressed;
     }
 
     //==================================================================================================================
@@ -382,6 +417,8 @@ public class Arkanoid {
     }
 
     public void moveBall() {
+        if (!ballAnimationStarted)
+            return;
         double centerX = ball.getCenterX(), centerY = ball.getCenterY(), speed = ball.getSpeed();
         if (collided())
             return;
@@ -404,23 +441,25 @@ public class Arkanoid {
     // Animation related methods
     //==================================================================================================================
     public void startAnimation() {
-        animationBall.start();
+        gameAnimation.start();
     }
 
     public void stopAnimation() {
-        animationBall.stop();
+        gameAnimation.stop();
     }
 
     public void setAnimation(int fps) {
-        this.animationBall = new BallAnimation(this, fps);
+        this.gameAnimation = new GameAnimation(this, fps);
     }
 
-    public void hasStarted() {
+    public void startBallAnimation() {
         lost.setValue(false);
+        ballAnimationStarted = true;
     }
 
     public void hasLost() {
         lost.setValue(true);
+        ballAnimationStarted = false;
     }
 
     public BooleanProperty lostProperty() {

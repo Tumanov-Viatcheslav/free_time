@@ -2,14 +2,12 @@ package org.example.arkanoid.source;
 
 import javafx.animation.AnimationTimer;
 
-public class BallAnimation extends AnimationTimer {
-    // TODO Think if this can be moved somehow
-    // TODO Try adding platform animation for smooth movement
+public class GameAnimation extends AnimationTimer {
     Arkanoid game;
     int fps;
     private long previousFrameTime = 0;
 
-    public BallAnimation(Arkanoid game, int fps) {
+    public GameAnimation(Arkanoid game, int fps) {
         this.game = game;
         this.fps = fps;
     }
@@ -36,5 +34,6 @@ public class BallAnimation extends AnimationTimer {
 
     private void doHandle() {
         game.moveBall();
+        game.movePlatform();
     }
 }

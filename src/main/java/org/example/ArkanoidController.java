@@ -18,7 +18,7 @@ import org.example.arkanoid.view.BallView;
 import org.example.arkanoid.view.PlatformView;
 
 public class ArkanoidController {
-    private final double DEFAULT_STEP_SIZE = 10.0,
+    private final double DEFAULT_STEP_SIZE = 200.0,
             WINDOW_PROPORTION = 3.0 / 4.0,
             DEFAULT_BALL_SPEED = 250.0,
             PLATFORM_ELEVATION = 20.0;
@@ -27,8 +27,11 @@ public class ArkanoidController {
 
     private final DoubleProperty scale = new SimpleDoubleProperty();
     private final BooleanProperty lost = new SimpleBooleanProperty(false);
-    private double stepSize = DEFAULT_STEP_SIZE;
+    private double platformSpeed = DEFAULT_STEP_SIZE / DEFAULT_FPS;
+    private double ballSpeed = DEFAULT_BALL_SPEED / DEFAULT_FPS;
     private boolean started = false;
+    private final BooleanProperty leftPressed = new SimpleBooleanProperty(false);
+    private final BooleanProperty rightPressed = new SimpleBooleanProperty(false);
 
     @FXML
     private AnchorPane pane;
@@ -48,34 +51,33 @@ public class ArkanoidController {
 
     @FXML
     private void switchToMenu() throws IOException {
-        App.setRoot("menu");
         game.stopAnimation();
+        App.setRoot("menu");
     }
 
     private void moveUp() {
-        if (platform.getY() - stepSize > border.getY())
-            platform.setY(platform.getY() - stepSize);
+        if (platform.getY() - platformSpeed > border.getY())
+            platform.setY(platform.getY() - platformSpeed);
     }
 
     private void moveDown() {
-        if (platform.getY() + platform.getHeight() + stepSize < border.getHeight())
-            platform.setY(platform.getY() + stepSize);
+        if (platform.getY() + platform.getHeight() + platformSpeed < border.getHeight())
+            platform.setY(platform.getY() + platformSpeed);
     }
 
     private void moveLeft() {
         if (!lost.get())
-            game.movePlatformLeft(stepSize);
+            game.movePlatformLeft(platformSpeed);
     }
 
     private void moveRight() {
         if (!lost.get())
-            game.movePlatformRight(stepSize);
+            game.movePlatformRight(platformSpeed);
     }
 
     private void startGame() {
         ball.centerXProperty().unbind();
-        game.hasStarted();
-        game.startAnimation();
+        game.startBallAnimation();
     }
 
     private void lostGame() {
@@ -98,11 +100,17 @@ public class ArkanoidController {
 //                break;
             case LEFT:
             case A:
-                moveLeft();
+                //moveLeft();
+                if (!lost.get()) {
+                    leftPressed.set(true);
+                }
                 break;
             case RIGHT:
             case D:
-                moveRight();
+                //moveRight();
+                if (!lost.get()) {
+                    rightPressed.set(true);
+                }
                 break;
             case SPACE:
                 if (started || lost.get())
@@ -117,17 +125,34 @@ public class ArkanoidController {
     }
 
     @FXML
+    private void handleOnKeyReleased(KeyEvent keyEvent) {
+        KeyCode key = keyEvent.getCode();
+        switch (key) {
+            case LEFT:
+            case A:
+                leftPressed.set(false);
+                break;
+            case RIGHT:
+            case D:
+                rightPressed.set(false);
+                break;
+        }
+    }
+
+    @FXML
     public void initialize() {
-        bindBorderView();
-        initBorder();
-        initPlatform();
-        initBall();
         initGame();
         scale.bind(borderView.widthProperty().divide(App.initialWidth));
-        bindPlatformView();
-        bindBallView();
+        bindViews();
         addResizeListeners();
         initAndBindLost();
+        game.startAnimation();
+    }
+
+    private void bindViews() {
+        bindBorderView();
+        bindPlatformView();
+        bindBallView();
     }
 
     private void initBorder() {
@@ -164,11 +189,16 @@ public class ArkanoidController {
     }
 
     private void initGame() {
+        initBorder();
+        initPlatform();
+        initBall();
         game = new Arkanoid();
         game.setBorder(border);
         game.setPlatform(platform);
         game.setBall(ball);
         game.setAnimation(DEFAULT_FPS);
+        game.leftPressedProperty().bind(leftPressed);
+        game.rightPressedProperty().bind(rightPressed);
     }
 
     private void bindBorderView() {
@@ -180,12 +210,13 @@ public class ArkanoidController {
         platform = new Platform();
         platform.setY(border.getHeight() - platform.getHeight() - PLATFORM_ELEVATION);
         platform.setX((border.getWidth() - platform.getWidth()) / 2);
+        platform.setSpeed(platformSpeed);
     }
     private void initBall() {
         ball = new Ball();
         ball.centerXProperty().bind(platform.xProperty().add(platform.widthProperty().divide(2.0)));
         ball.setCenterY(platform.getY() - ball.getRadius());
-        ball.setSpeed(DEFAULT_BALL_SPEED / DEFAULT_FPS);
+        ball.setSpeed(ballSpeed);
     }
 
     private void bindPlatformView() {

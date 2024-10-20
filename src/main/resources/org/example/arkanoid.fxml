@@ -7,7 +7,7 @@
 <?import org.example.BorderGameView?>
 <?import org.example.arkanoid.view.BallView?>
 <?import javafx.scene.text.Font?>
-<AnchorPane fx:id="pane" onKeyPressed="#handleOnKeyPressed"
+<AnchorPane fx:id="pane" onKeyPressed="#handleOnKeyPressed" onKeyReleased="#handleOnKeyReleased"
             xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.example.ArkanoidController">
     <Button fx:id="menuButton" AnchorPane.rightAnchor="0.0" onAction="#switchToMenu" text="Exit to menu" focusTraversable="false"/>
     <Label fx:id="labelArkanoid" text="ARKANOID"/>
