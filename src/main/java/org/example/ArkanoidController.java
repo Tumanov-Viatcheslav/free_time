@@ -35,6 +35,7 @@ public class ArkanoidController {
     private double platformSpeed = DEFAULT_STEP_SIZE / DEFAULT_FPS;
     private double ballSpeed = DEFAULT_BALL_SPEED / DEFAULT_FPS;
     private boolean started = false;
+    private int score = 0;
     private boolean finished = false;
     private final BooleanProperty leftPressed = new SimpleBooleanProperty(false);
     private final BooleanProperty rightPressed = new SimpleBooleanProperty(false);
@@ -89,6 +90,7 @@ public class ArkanoidController {
 
     private void destroyedProcessing() {
         boolean bricksLeft = false;
+        score++;
         for (Brick brick : bricks)
             if (!brick.isDestroyed())
                 bricksLeft = true;
@@ -98,15 +100,17 @@ public class ArkanoidController {
 
     private void lostGame() {
         game.stopAnimation();
-        labelConclusion.setText("YOU LOST");
+        labelConclusion.setText("YOU LOST\nSCORE: " + score);
         labelConclusion.setVisible(true);
+        labelConclusion.toFront();
         finished = true;
     }
 
     private void winGame() {
         game.stopAnimation();
-        labelConclusion.setText("CONGRATULATIONS!");
+        labelConclusion.setText("CONGRATULATIONS!\nSCORE: " + score);
         labelConclusion.setVisible(true);
+        labelConclusion.toFront();
         finished = true;
     }
 
