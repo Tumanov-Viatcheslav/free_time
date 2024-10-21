@@ -29,6 +29,8 @@ public class Brick extends BaseRectangle {
 
     public void decreaseHp() {
         this.hp.set(getHp() - 1);
+        if (hp.get() == 0)
+            setDestroyed();
     }
 
     public boolean isDestroyed() {

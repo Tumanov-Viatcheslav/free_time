@@ -35,6 +35,7 @@ public class ArkanoidController {
     private double platformSpeed = DEFAULT_STEP_SIZE / DEFAULT_FPS;
     private double ballSpeed = DEFAULT_BALL_SPEED / DEFAULT_FPS;
     private boolean started = false;
+    private boolean finished = false;
     private final BooleanProperty leftPressed = new SimpleBooleanProperty(false);
     private final BooleanProperty rightPressed = new SimpleBooleanProperty(false);
 
@@ -47,7 +48,7 @@ public class ArkanoidController {
     @FXML
     private BallView ballView;
     @FXML
-    public Label labelLost;
+    public Label labelConclusion;
 
     private Arkanoid game;
     private BorderGame border;
@@ -61,34 +62,52 @@ public class ArkanoidController {
         App.setRoot("menu");
     }
 
-    private void moveUp() {
-        if (platform.getY() - platformSpeed > border.getY())
-            platform.setY(platform.getY() - platformSpeed);
-    }
-
-    private void moveDown() {
-        if (platform.getY() + platform.getHeight() + platformSpeed < border.getHeight())
-            platform.setY(platform.getY() + platformSpeed);
-    }
-
-    private void moveLeft() {
-        if (!lost.get())
-            game.movePlatformLeft(platformSpeed);
-    }
-
-    private void moveRight() {
-        if (!lost.get())
-            game.movePlatformRight(platformSpeed);
-    }
+//    private void moveUp() {
+//        if (platform.getY() - platformSpeed > border.getY())
+//            platform.setY(platform.getY() - platformSpeed);
+//    }
+//
+//    private void moveDown() {
+//        if (platform.getY() + platform.getHeight() + platformSpeed < border.getHeight())
+//            platform.setY(platform.getY() + platformSpeed);
+//    }
+//
+//    private void moveLeft() {
+//        if (!lost.get())
+//            game.movePlatformLeft(platformSpeed);
+//    }
+//
+//    private void moveRight() {
+//        if (!lost.get())
+//            game.movePlatformRight(platformSpeed);
+//    }
 
     private void startGame() {
         ball.centerXProperty().unbind();
         game.startBallAnimation();
     }
 
+    private void destroyedProcessing() {
+        boolean bricksLeft = false;
+        for (Brick brick : bricks)
+            if (!brick.isDestroyed())
+                bricksLeft = true;
+        if (!bricksLeft)
+            winGame();
+    }
+
     private void lostGame() {
-        labelLost.setVisible(true);
-        started = false;
+        game.stopAnimation();
+        labelConclusion.setText("YOU LOST");
+        labelConclusion.setVisible(true);
+        finished = true;
+    }
+
+    private void winGame() {
+        game.stopAnimation();
+        labelConclusion.setText("CONGRATULATIONS!");
+        labelConclusion.setVisible(true);
+        finished = true;
     }
 
     @FXML
@@ -106,19 +125,19 @@ public class ArkanoidController {
             case LEFT:
             case A:
                 //moveLeft();
-                if (!lost.get()) {
+                if (!finished) {
                     leftPressed.set(true);
                 }
                 break;
             case RIGHT:
             case D:
                 //moveRight();
-                if (!lost.get()) {
+                if (!finished) {
                     rightPressed.set(true);
                 }
                 break;
             case SPACE:
-                if (started || lost.get())
+                if (started || finished)
                     break;
                 startGame();
                 started = true;
@@ -150,7 +169,8 @@ public class ArkanoidController {
         scale.bind(borderView.widthProperty().divide(App.initialWidth));
         bindViews();
         addResizeListeners();
-        initAndBindLost();
+        bindLost();
+        bindConclusionLabel();
         game.startAnimation();
     }
 
@@ -165,11 +185,14 @@ public class ArkanoidController {
         border.setY(borderView.getY());
     }
 
-    private void initAndBindLost() {
+    private void bindLost() {
         lost.bind(game.lostProperty());
         lost.addListener(((observable, oldValue, newValue) -> {if (newValue) lostGame();}));
-        labelLost.translateXProperty().bind(borderView.widthProperty().subtract(labelLost.widthProperty()).divide(2));
-        labelLost.translateYProperty().bind(borderView.heightProperty().subtract(borderView.yProperty()).subtract(labelLost.heightProperty()).divide(2));
+    }
+
+    private void bindConclusionLabel() {
+        labelConclusion.translateXProperty().bind(borderView.widthProperty().subtract(labelConclusion.widthProperty()).divide(2));
+        labelConclusion.translateYProperty().bind(borderView.heightProperty().subtract(borderView.yProperty()).subtract(labelConclusion.heightProperty()).divide(2));
     }
 
     private void addResizeListeners() {
@@ -210,8 +233,13 @@ public class ArkanoidController {
 
     private void initBricks() {
         // TODO load bricks from resource file level1.txt (or .json, .csv)
-        Brick brick = new Brick(100, 100, 50, 20);
+        Brick brick = new Brick(300, 100, 300, 20);
         bricks.add(brick);
+        brick.destroyedProperty().addListener((observable, oldValue, newValue) -> destroyedProcessing());
+        bindBrickView(brick);
+        brick = new Brick(10, 150, 300, 20);
+        bricks.add(brick);
+        brick.destroyedProperty().addListener((observable, oldValue, newValue) -> destroyedProcessing());
         bindBrickView(brick);
     }
 

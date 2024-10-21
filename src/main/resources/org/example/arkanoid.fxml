@@ -15,7 +15,7 @@
                     AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="30.0" y="30"/>
     <PlatformView fx:id="platformView" fill="burlywood" stroke="black" focusTraversable="true"/>
     <BallView fx:id="ballView" fill="bisque"/>
-    <Label fx:id="labelLost" visible="false" text="YOU LOST" textFill="aliceblue">
+    <Label fx:id="labelConclusion" visible="false" textFill="aliceblue">
         <font>
             <Font name="Arial Black" size="48.0" />
         </font>

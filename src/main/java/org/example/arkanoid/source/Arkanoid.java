@@ -253,7 +253,6 @@ public class Arkanoid {
                 ball.moveTo(oldX - ((border.getHeight() - radius) - oldY), border.getHeight() - radius);
                 ball.turnRight();
             }
-            stopAnimation();
             hasLost();
         }
         if (collidedRightBorder) {
@@ -320,8 +319,63 @@ public class Arkanoid {
      * returns  true if collided with brick
      *          false if not collided with brick
      */
-    private void handleBricksCollision(int brickIndex) {
+    private void handleBricksCollision(Brick brick) {
         // TODO handle collision
+        double oldX = ball.getCenterX(), oldY = ball.getCenterY(), newX = getNewX(oldX), newY = getNewY(oldY),
+                radius = ball.getRadius(),
+                max = -1,
+                k = (newY - oldY) / (newX - oldX), c = oldY - k * oldX,
+                brickUpBorder = brick.getY(), brickLeftBorder = brick.getX(),
+                brickRightBorder = brick.getX() + brick.getWidth(), brickDownBorder = brick.getY() + brick.getHeight();
+
+        //Upper brick border
+        double xUpperIntersectionCoordinate = (brickUpBorder - radius - c) / k;
+        if ((xUpperIntersectionCoordinate >= brick.getX() - radius && xUpperIntersectionCoordinate <= brick.getX() + brick.getWidth() + radius) &&
+                (newY > brickUpBorder - radius && oldY < brickUpBorder - radius)
+        ) {
+            ball.moveTo((brickUpBorder - radius - c) / k, brickUpBorder - radius);
+            if (k > 0)
+                ball.turnLeft();
+            else ball.turnRight();
+            brick.decreaseHp();
+            return;
+        }
+        //Left brick border
+        double yLeftIntersectionCoordinate = k * (brickLeftBorder - radius) + c;
+        if ((yLeftIntersectionCoordinate >= brick.getY() - radius && yLeftIntersectionCoordinate <= brick.getY() + brick.getHeight() + radius) &&
+                (newX > brickLeftBorder - radius && oldX < brickLeftBorder - radius)
+        ) {
+            ball.moveTo(brickLeftBorder - radius, k * (brickLeftBorder - radius) + c);
+            if (k > 0)
+                ball.turnRight();
+            else ball.turnLeft();
+            brick.decreaseHp();
+            return;
+        }
+        //Right brick border
+        double yRightIntersectionCoordinate = k * (brickRightBorder + radius) + c;
+        if ((yRightIntersectionCoordinate >= brick.getY() - radius && yRightIntersectionCoordinate <= brick.getY() + brick.getHeight() + radius) &&
+                (newX < brickRightBorder + radius && oldX > brickRightBorder + radius)
+        ) {
+            ball.moveTo(brickRightBorder + radius, k * (brickRightBorder + radius) + c);
+            if (k > 0)
+                ball.turnRight();
+            else ball.turnLeft();
+            brick.decreaseHp();
+            return;
+        }
+        //Bottom brick border
+        double xBottomIntersectionCoordinate = (brickDownBorder + radius - c) / k;
+        if ((xBottomIntersectionCoordinate >= brick.getX() - radius && xBottomIntersectionCoordinate <= brick.getX() + brick.getWidth() + radius) &&
+                (newY < brickDownBorder + radius && oldY > brickDownBorder + radius)
+        ) {
+            ball.moveTo((brickDownBorder + radius - c) / k, brickDownBorder + radius);
+            if (k > 0)
+                ball.turnLeft();
+            else ball.turnRight();
+            brick.decreaseHp();
+            return;
+        }
     }
 
     /**
@@ -352,7 +406,7 @@ public class Arkanoid {
     private double getPlatformCollisionDistance() {
         double oldX = ball.getCenterX(), oldY = ball.getCenterY(), newX = getNewX(oldX), newY = getNewY(oldY),
                 radius = ball.getRadius(),
-                max = -1,
+                min = Double.MAX_VALUE,
                 k = (newY - oldY) / (newX - oldX), c = oldY - k * oldX,
                 platformUpBorder = platform.getY(), platformLeftBorder = platform.getX(), platformRightBorder = platform.getX() + platform.getWidth();
 
@@ -361,22 +415,22 @@ public class Arkanoid {
         if ((xIntersectionCoordinate >= platform.getX() - radius && xIntersectionCoordinate <= platform.getX() + platform.getWidth() + radius) &&
                 (newY > platformUpBorder - radius && oldY < platformUpBorder - radius)
         )
-            return platformUpBorder - oldY - radius;
+            min = Math.min(min, platformUpBorder - oldY - radius);
         //Left platform border
         double yLeftIntersectionCoordinate = k * (platformLeftBorder - radius) + c;
         if ((yLeftIntersectionCoordinate >= platform.getY() - radius && yLeftIntersectionCoordinate <= platform.getY() + platform.getHeight() + radius) &&
                 (newX > platformLeftBorder - radius && oldX < platformLeftBorder - radius)
         )
-            return platformLeftBorder - oldX - radius;
+            min = Math.min(min, platformLeftBorder - oldX - radius);
         //Right platform border
         double yRightIntersectionCoordinate = k * (platformRightBorder + radius) + c;
         if ((yRightIntersectionCoordinate >= platform.getY() - radius && yRightIntersectionCoordinate <= platform.getY() + platform.getHeight() + radius) &&
                 (newX < platformRightBorder + radius && oldX > platformRightBorder + radius)
         )
-            return oldX - platformRightBorder - radius;
+            min = Math.min(min, oldX - platformRightBorder - radius);
 
 
-        return max;
+        return min == Double.MAX_VALUE ? -1 : min;
     }
 
     /**
@@ -384,16 +438,56 @@ public class Arkanoid {
      *          nearestBrickIndex if there is collision
      */
     private int getNearestBrickIndex() {
-        // TODO bricks
-        return -1;
+        if (bricks == null || bricks.isEmpty())
+            return -1;
+        double min = Double.MAX_VALUE, tmp;
+        int minIndex = -1;
+        for (int i = 0; i < bricks.size(); i++)
+            if (!bricks.get(i).isDestroyed() && (tmp = getBrickCollisionDistance(bricks.get(i))) < min && tmp != -1) {
+                min = tmp;
+                minIndex = i;
+            }
+        return minIndex;
     }
 
     /**
      * @return -1 if there is no collision
      *          d - distance to brick if the is collision on movement execution
      */
-    private double getBrickCollisionDistance(int brickIndex) {
-        return -1;
+    private double getBrickCollisionDistance(Brick brick) {
+        double oldX = ball.getCenterX(), oldY = ball.getCenterY(), newX = getNewX(oldX), newY = getNewY(oldY),
+                radius = ball.getRadius(),
+                min = Double.MAX_VALUE,
+                k = (newY - oldY) / (newX - oldX), c = oldY - k * oldX,
+                brickUpBorder = brick.getY(), brickLeftBorder = brick.getX(),
+                brickRightBorder = brick.getX() + brick.getWidth(), brickDownBorder = brick.getY() + brick.getHeight();
+
+        //Upper brick border
+        double xUpperIntersectionCoordinate = (brickUpBorder - radius - c) / k;
+        if ((xUpperIntersectionCoordinate >= brick.getX() - radius && xUpperIntersectionCoordinate <= brick.getX() + brick.getWidth() + radius) &&
+                (newY > brickUpBorder - radius && oldY < brickUpBorder - radius)
+        )
+            min = Math.min(min, brickUpBorder - oldY - radius);
+        //Left brick border
+        double yLeftIntersectionCoordinate = k * (brickLeftBorder - radius) + c;
+        if ((yLeftIntersectionCoordinate >= brick.getY() - radius && yLeftIntersectionCoordinate <= brick.getY() + brick.getHeight() + radius) &&
+                (newX > brickLeftBorder - radius && oldX < brickLeftBorder - radius)
+        )
+            min = Math.min(min, brickLeftBorder - oldX - radius);
+        //Right brick border
+        double yRightIntersectionCoordinate = k * (brickRightBorder + radius) + c;
+        if ((yRightIntersectionCoordinate >= brick.getY() - radius && yRightIntersectionCoordinate <= brick.getY() + brick.getHeight() + radius) &&
+                (newX < brickRightBorder + radius && oldX > brickRightBorder + radius)
+        )
+            min = Math.min(min, oldX - brickRightBorder - radius);
+        //Bottom brick border
+        double xBottomIntersectionCoordinate = (brickDownBorder + radius - c) / k;
+        if ((xBottomIntersectionCoordinate >= brick.getX() - radius && xBottomIntersectionCoordinate <= brick.getX() + brick.getWidth() + radius) &&
+                (newY < brickDownBorder + radius && oldY > brickDownBorder + radius)
+        )
+            min = Math.min(min, oldY - brickDownBorder - radius);
+
+        return min == Double.MAX_VALUE ? -1 : min;
     }
 
     /**
@@ -407,7 +501,7 @@ public class Arkanoid {
         int brickIndex = getNearestBrickIndex();
         double distanceToBorder = getBorderCollisionDistance(),
                 distanceToPlatform = getPlatformCollisionDistance(),
-                distanceToNearestBrick = getBrickCollisionDistance(brickIndex);
+                distanceToNearestBrick = brickIndex == -1 ? -1 : getBrickCollisionDistance(bricks.get(brickIndex));
 
         if (distanceToBorder != -1)
             collidedBorder = true;
@@ -415,6 +509,9 @@ public class Arkanoid {
             collidedPlatform = true;
         if (distanceToNearestBrick != -1)
             collidedBrick = true;
+
+        if (!(collidedBorder || collidedPlatform || collidedBrick))
+            return false;
 
         distanceToBorder = distanceToBorder == -1 ? Double.MAX_VALUE : distanceToBorder;
         distanceToPlatform = distanceToPlatform == -1 ? Double.MAX_VALUE : distanceToPlatform;
@@ -424,13 +521,13 @@ public class Arkanoid {
             handleBorderCollision();
         else if (distanceToPlatform < distanceToNearestBrick)
             handlePlatformCollision();
-        else handleBricksCollision(brickIndex);
+        else handleBricksCollision(bricks.get(brickIndex));
 
         return collidedBorder | collidedPlatform | collidedBrick;
     }
 
     public void moveBall() {
-        if (!ballAnimationStarted)
+        if (!ballAnimationStarted || lost.get())
             return;
         double centerX = ball.getCenterX(), centerY = ball.getCenterY(), speed = ball.getSpeed();
         if (collided())
